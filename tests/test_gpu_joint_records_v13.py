@@ -7,11 +7,43 @@ import torch
 from research_v3.cli.probe_gpu_fullwidth_joint import _model
 from research_v3.data.stream_solver_dataset_v13 import make_root
 from research_v3.gpu.record_batch_v13 import own_records_to_cuda
-from research_v3.gpu.joint_records_v13 import complete_joint_basis_records
+from research_v3.gpu.joint_records_v13 import complete_joint_basis_records, exact_root_loss
+from research_v3.gpu.field_slice import gpu_field_value
+from research_v3.gf2 import rank
 
 
 @unittest.skipUnless(torch.cuda.is_available(), 'Molab CUDA gate')
 class JointExactCudaTests(unittest.TestCase):
+    def test_isolated_exact_gradient_on_noncollapsed_stage18_and35(self):
+        config = json.loads((Path(__file__).resolve().parents[2] /
+                             'full_training_config.json').read_text())
+        records = []
+        for index in (14, 70):
+            for attempt in range(100):
+                record, _ = make_root('train', 0, index, attempt, 7000)
+                floor = rank(tuple(row ^ (1 << i)
+                                   for i, row in enumerate(record.state.packed_rows)))
+                if record.exact_distance > floor:
+                    records.append(record)
+                    break
+            else:
+                self.fail('no noncollapsed exact fixture in explicit 100-attempt budget')
+        batch = own_records_to_cuda(records)
+        torch.manual_seed(config['seed'])
+        model = _model(config).train()
+        values = gpu_field_value(model.field, batch.walk.rows,
+                                 mc_samples=config['diffusion']['mc_samples'],
+                                 mc_seed=config['feature_seed'],
+                                 max_pair_states=config['diffusion']['max_pair_states'])
+        values.retain_grad()
+        loss = exact_root_loss(values, batch.exact_distances)
+        loss.backward()
+        self.assertTrue(torch.isfinite(values.grad).all().item())
+        self.assertTrue((values.grad.abs() > 0).all().item())
+        gradients = [p.grad for p in model.field.parameters() if p.grad is not None]
+        self.assertTrue(all(torch.isfinite(g).all().item() for g in gradients))
+        self.assertGreater(sum(g.abs().sum().item() for g in gradients), 0)
+
     def test_exact_root_full_bellman_joint_gradient(self):
         config = json.loads((Path(__file__).resolve().parents[2] /
                              'full_training_config.json').read_text())
