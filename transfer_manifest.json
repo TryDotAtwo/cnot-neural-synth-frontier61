@@ -1,0 +1,10 @@
+{
+  "t03_v13_molab_handoff.zip": {
+    "sha256": "f0b4bdac4f657cf9d330e1b631307f8841c15894c08ca7891021875b4d029679",
+    "bytes": 502333
+  },
+  "t03_v13_delta_with_bank.zip": {
+    "sha256": "b49dfc34f7b0bdb0d6e30fafee0e8c0590b489d4d2e278cd59daf192344cf61d",
+    "bytes": 18092
+  }
+}
