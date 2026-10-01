@@ -1,0 +1,2217 @@
+{
+  "schema": "frontier61_normative_requirement_inventory",
+  "normative_source_sha256": {
+    "IMPLEMENTATION_PLAN_RU": "aafd82a3bb63d42b8f6d52d94323329b2ee4e044ebe5d0d83e8f0a35e31639dc",
+    "ARCHITECTURE_AUDIT_RU": "577b1d1c6cc7a3e8f271b22e158e7a6e1eeb52d937049a9705cb8d23496c2a4f",
+    "FEATURE_BANK_RU": "ef92e7bce36182d5562943702ef8371302d78fb5216532c91579f918def21f26",
+    "STAGE_COVERAGE_RU": "27328d113ca42f0490aab2d3243e427fdcd22f43b1b4b8df6a295c744c5338b5",
+    "EXPERIMENT_PROTOCOL_RU": "3654e1013a812ba1360666b75e57f28f4f8b40256be346e94316f31e376c12a4"
+  },
+  "tasks": [
+    {
+      "task": "T00",
+      "title": "Зафиксировать источники и исходные результаты",
+      "requirements": [
+        {
+          "source_line": 144,
+          "requirement": "Зафиксировать интерпретатор/container, исходные paths/SHA, nine matrix canonical keys и все использованные certificate refs. Не запускать старые обучающие команды из документации.",
+          "implementation_evidence": [
+            "research_v3/evidence.py"
+          ],
+          "execution_evidence": [
+            "T00_NAMED_GATE_2026-10-01.json",
+            "T00_NINE_BASELINE_WORD_AUDIT_V2_2026-10-01.json"
+          ],
+          "status": "verified",
+          "reason": "Host interpreter identified; nine full keys and pinned source certificate refs independently replayed; no training command executed."
+        },
+        {
+          "source_line": 145,
+          "requirement": "Тесты `changed_source_is_drift`, `missing_report_is_missing`, `false_verified_flag_is_rejected`: испортить копию слова/хэш; checker обязан отказать именно соответствующему утверждению.",
+          "implementation_evidence": [
+            "research_v3/evidence.py"
+          ],
+          "execution_evidence": [
+            "T00_NAMED_GATE_2026-10-01.json"
+          ],
+          "status": "verified",
+          "reason": "Required negative tests executed with named -B command, exit 0."
+        },
+        {
+          "source_line": 146,
+          "requirement": "Повторно сверить current hash с REPORT_DRIFT_EVIDENCE и извлечёнными патчами; классифицировать известный drift как explained, новый — как unresolved. Не переписать pinned manifest ради зелёного статуса.",
+          "implementation_evidence": [
+            "research_v3/evidence.py"
+          ],
+          "execution_evidence": [
+            "T00_SOURCE_INTEGRITY_2026-10-01.json"
+          ],
+          "status": "verified",
+          "reason": "23 matches; sole drift exactly reconstructed from recorded patches to pinned SHA. Raw integrity remains false; explained drift separate."
+        },
+        {
+          "source_line": 147,
+          "requirement": "Проверить собственные compiler incumbents из файлов и их ориентацию. Исторические 19/41/68/93/149/350/421/572/1057 — ожидаемые ссылки для сверки, не зашитые ответы.",
+          "implementation_evidence": [
+            "research_v3/evidence.py"
+          ],
+          "execution_evidence": [
+            "T00_COMPILER_CHOICES_2026-10-01.json",
+            "HISTORICAL_WINDOW_ATTRIBUTION_2026-10-01.json",
+            "T00_NINE_BASELINE_WORD_AUDIT_V2_2026-10-01.json"
+          ],
+          "status": "verified",
+          "reason": "54 saved compiler choices and 18 before/after window words checked against full matrices. Historical best costs include exact and NN-window postprocess; no raw-neural or optimality attribution."
+        },
+        {
+          "source_line": 148,
+          "requirement": "Gate: `python -B -m unittest research_v3.tests.test_T00_evidence -v`; отчёт различает source drift, word validity, optimality и uncomputed. Сохранить checkpoint задачи.",
+          "implementation_evidence": [
+            "research_v3/evidence.py"
+          ],
+          "execution_evidence": [
+            "T00_NAMED_GATE_2026-10-01.json",
+            "T00_SOURCE_INTEGRITY_2026-10-01.json",
+            "research_v3/artifacts/evidence/T00_2026-10-01/manifest.json",
+            "research_v3/artifacts/evidence/T00_2026-10-01/receipt.json"
+          ],
+          "status": "verified",
+          "reason": "Named gate exit 0; immutable named checkpoint ZIP reopened, CRC and all 12 file SHA verified. Explained drift retained separately from raw integrity."
+        }
+      ],
+      "gate_commands": [
+        {
+          "command": "python -B -m unittest research_v3.tests.test_T00_evidence -v",
+          "current_file": "research_v3/tests/test_T00_evidence.py",
+          "exists": true,
+          "source_sha256": "634b530f85679d8c196acacff3c7352e4ef7916cb40cda403dc1af64aec4e289",
+          "execution_status": "not_established_by_inventory"
+        }
+      ]
+    },
+    {
+      "task": "T01",
+      "title": "Полная матрица, алфавит, слова и симметрии",
+      "requirements": [
+        {
+          "source_line": 156,
+          "requirement": "Написать тесты n=1 identity/no moves, n=2 одиночный CNOT, SWAP=3 CNOT, сингулярный/несquare вход, out-of-range/self gate, padded wires. Недопустимый вход отвергается до модели.",
+          "implementation_evidence": [
+            "research_v3/contracts.py",
+            "research_v3/gf2.py",
+            "research_v3/words.py",
+            "research_v3/symmetry.py",
+            "research_v3/tests/test_T01_state.py"
+          ],
+          "execution_evidence": [
+            "T01_NAMED_GATE_2026-10-01.json"
+          ],
+          "status": "verified",
+          "reason": "Named seven-test gate passes: exact full-bit endpoints; GL1/2/3 catalogs 1/6/168; inverse, transpose, relabel and restricted weighted alphabets; padding rejected before model."
+        },
+        {
+          "source_line": 157,
+          "requirement": "Проверить encoder/reduction на некоммутирующем двухgate примере: ошибочное сохранение порядка не должно пройти verifier.",
+          "implementation_evidence": [
+            "research_v3/contracts.py",
+            "research_v3/gf2.py",
+            "research_v3/words.py",
+            "research_v3/symmetry.py",
+            "research_v3/tests/test_T01_state.py"
+          ],
+          "execution_evidence": [
+            "T01_NAMED_GATE_2026-10-01.json"
+          ],
+          "status": "verified",
+          "reason": "Named seven-test gate passes: exact full-bit endpoints; GL1/2/3 catalogs 1/6/168; inverse, transpose, relabel and restricted weighted alphabets; padding rejected before model."
+        },
+        {
+          "source_line": 158,
+          "requirement": "Реализовать inverse, transpose и simultaneous permutation отдельно. Inverse сохраняет любой фиксированный набор инволютивных CNOT; transpose требует обратных рёбер с теми же ценами; relabel переносит alphabet/costs или проверяет автоморфизм.",
+          "implementation_evidence": [
+            "research_v3/contracts.py",
+            "research_v3/gf2.py",
+            "research_v3/words.py",
+            "research_v3/symmetry.py",
+            "research_v3/tests/test_T01_state.py"
+          ],
+          "execution_evidence": [
+            "T01_NAMED_GATE_2026-10-01.json"
+          ],
+          "status": "verified",
+          "reason": "Named seven-test gate passes: exact full-bit endpoints; GL1/2/3 catalogs 1/6/168; inverse, transpose, relabel and restricted weighted alphabets; padding rejected before model."
+        },
+        {
+          "source_line": 159,
+          "requirement": "Для n≤3 проверить карты полных слов на всех достижимых состояниях; отдельно restricted alphabet с одной ориентацией и различными ценами, где transpose не является симметрией прежней задачи.",
+          "implementation_evidence": [
+            "research_v3/contracts.py",
+            "research_v3/gf2.py",
+            "research_v3/words.py",
+            "research_v3/symmetry.py",
+            "research_v3/tests/test_T01_state.py"
+          ],
+          "execution_evidence": [
+            "T01_NAMED_GATE_2026-10-01.json"
+          ],
+          "status": "verified",
+          "reason": "Named seven-test gate passes: exact full-bit endpoints; GL1/2/3 catalogs 1/6/168; inverse, transpose, relabel and restricted weighted alphabets; padding rejected before model."
+        },
+        {
+          "source_line": 160,
+          "requirement": "Gate: `python -B -m unittest research_v3.tests.test_T01_state -v`; повторно проверить все выходные bits. Snapshot/commit только этих контрактов.",
+          "implementation_evidence": [
+            "research_v3/contracts.py",
+            "research_v3/gf2.py",
+            "research_v3/words.py",
+            "research_v3/symmetry.py",
+            "research_v3/tests/test_T01_state.py"
+          ],
+          "execution_evidence": [
+            "T01_NAMED_GATE_2026-10-01.json",
+            "research_v3\\artifacts\\evidence\\T01_2026-10-01\\manifest.json",
+            "research_v3\\artifacts\\evidence\\T01_2026-10-01\\receipt.json"
+          ],
+          "status": "verified",
+          "reason": "Named seven-test gate passes: exact full-bit endpoints; GL1/2/3 catalogs 1/6/168; inverse, transpose, relabel and restricted weighted alphabets; padding rejected before model. Named immutable task snapshot reopened; all seven file hashes and CRC verified."
+        }
+      ],
+      "gate_commands": [
+        {
+          "command": "python -B -m unittest research_v3.tests.test_T01_state -v",
+          "current_file": "research_v3/tests/test_T01_state.py",
+          "exists": true,
+          "source_sha256": "0f5fa1eeff47bf6da21dc8d00ea1ac85d040563e61d77414ca03bde714099f68",
+          "execution_status": "not_established_by_inventory"
+        }
+      ]
+    },
+    {
+      "task": "T02",
+      "title": "Полный FeatureRegistry A–I и детерминированные packets",
+      "requirements": [
+        {
+          "source_line": 168,
+          "requirement": "Завести все 103 ID A–I в schema; сначала реализовать дешёвые A/B/F01, остальным вернуть явные unavailable/status, не фиктивные нули. Добавление десятого семейства не меняет формат модели.",
+          "implementation_evidence": [
+            "research_v3/features/registry.py",
+            "research_v3/features/packet.py",
+            "research_v3/features/cache.py",
+            "research_v3/features/structural.py",
+            "research_v3/tests/test_T02_features.py"
+          ],
+          "execution_evidence": [
+            "T02_REFERENCE_PACKET_AUDIT_2026-10-01.json",
+            "T02_BYTES_FIX_GATE_2026-10-01.json",
+            "T02_EXHAUSTIVE_CHEAP_EQUIVARIANCE_2026-10-01.json",
+            "T02_FULL_PROPOSER_EQUIVARIANCE_2026-10-01.json"
+          ],
+          "status": "partial",
+          "reason": "103 IDs and A/B/F01 availability checked; group byte accounting corrected with red/green test. Whole producer/proposer equivariance, schema run checkpoint and full per-requirement acceptance remain open."
+        },
+        {
+          "source_line": 169,
+          "requirement": "Определить group incidence по ролям и направленные pair indices. Metadata IDs/файлы/время исполнения не передавать как числовые признаки цели.",
+          "implementation_evidence": [
+            "research_v3/features/registry.py",
+            "research_v3/features/packet.py",
+            "research_v3/features/cache.py",
+            "research_v3/features/structural.py",
+            "research_v3/tests/test_T02_features.py"
+          ],
+          "execution_evidence": [
+            "T02_REFERENCE_PACKET_AUDIT_2026-10-01.json",
+            "T02_BYTES_FIX_GATE_2026-10-01.json",
+            "T02_EXHAUSTIVE_CHEAP_EQUIVARIANCE_2026-10-01.json",
+            "T02_FULL_PROPOSER_EQUIVARIANCE_2026-10-01.json"
+          ],
+          "status": "partial",
+          "reason": "103 IDs and A/B/F01 availability checked; group byte accounting corrected with red/green test. Whole producer/proposer equivariance, schema run checkpoint and full per-requirement acceptance remain open."
+        },
+        {
+          "source_line": 170,
+          "requirement": "Тесты `missing_not_zero`, `padding_is_not_wire`, `collision_safe_cache`, `same_state_same_policy_same_packet`, `changed_policy_invalidates_cache`; forced identical hashes для двух разных матриц не объединяют их.",
+          "implementation_evidence": [
+            "research_v3/features/registry.py",
+            "research_v3/features/packet.py",
+            "research_v3/features/cache.py",
+            "research_v3/features/structural.py",
+            "research_v3/tests/test_T02_features.py"
+          ],
+          "execution_evidence": [
+            "T02_REFERENCE_PACKET_AUDIT_2026-10-01.json",
+            "T02_BYTES_FIX_GATE_2026-10-01.json",
+            "T02_EXHAUSTIVE_CHEAP_EQUIVARIANCE_2026-10-01.json",
+            "T02_FULL_PROPOSER_EQUIVARIANCE_2026-10-01.json"
+          ],
+          "status": "verified",
+          "reason": "Named T02 suite includes collision-safe full keys, deterministic packets, policy invalidation, unavailable masks and padding; 13 tests exit 0."
+        },
+        {
+          "source_line": 171,
+          "requirement": "Проверить equivariance целого producer/proposer, включая tie handling и sampled cuts. Если выбор не эквивариантен, policy честно помечается augmentation-only; тест не отключается.",
+          "implementation_evidence": [
+            "research_v3/features/registry.py",
+            "research_v3/features/packet.py",
+            "research_v3/features/cache.py",
+            "research_v3/features/structural.py",
+            "research_v3/tests/test_T02_features.py"
+          ],
+          "execution_evidence": [
+            "T02_REFERENCE_PACKET_AUDIT_2026-10-01.json",
+            "T02_BYTES_FIX_GATE_2026-10-01.json",
+            "T02_EXHAUSTIVE_CHEAP_EQUIVARIANCE_2026-10-01.json",
+            "T02_FULL_PROPOSER_EQUIVARIANCE_2026-10-01.json"
+          ],
+          "status": "partial",
+          "reason": "All cheap producer and actual encoder+ordered proposer checked over GL3 and six relabels. Ordered physical template transported. Sampled-cut producer absent; clause remains open pending its declared symmetry contract. No claim of whole-family integration."
+        },
+        {
+          "source_line": 172,
+          "requirement": "Gate: `python -B -m unittest research_v3.tests.test_T02_features -v`; report по producer содержит время, bytes, calls, hits, omitted IDs. Новый run/schema фиксируется.",
+          "implementation_evidence": [
+            "research_v3/features/registry.py",
+            "research_v3/features/packet.py",
+            "research_v3/features/cache.py",
+            "research_v3/features/structural.py",
+            "research_v3/tests/test_T02_features.py"
+          ],
+          "execution_evidence": [
+            "T02_REFERENCE_PACKET_AUDIT_2026-10-01.json",
+            "T02_BYTES_FIX_GATE_2026-10-01.json",
+            "T02_EXHAUSTIVE_CHEAP_EQUIVARIANCE_2026-10-01.json",
+            "T02_FULL_PROPOSER_EQUIVARIANCE_2026-10-01.json"
+          ],
+          "status": "partial",
+          "reason": "103 IDs and A/B/F01 availability checked; group byte accounting corrected with red/green test. Whole producer/proposer equivariance, schema run checkpoint and full per-requirement acceptance remain open."
+        }
+      ],
+      "gate_commands": [
+        {
+          "command": "python -B -m unittest research_v3.tests.test_T02_features -v",
+          "current_file": "research_v3/tests/test_T02_features.py",
+          "exists": true,
+          "source_sha256": "509322c5933ed0959ddc08dd48756ce5770b8d395e9f8114d67c694233f7b7bd",
+          "execution_status": "not_established_by_inventory"
+        }
+      ]
+    },
+    {
+      "task": "T03",
+      "title": "Сертифицированные данные, replay и разделение выборок",
+      "requirements": [
+        {
+          "source_line": 180,
+          "requirement": "Ввести независимые источники: exact-small BFS, guarded exact families18/23–25/35–38, собственные paid-basis words, ordinary/Poisson walks. Прочитать первичные гипотезы каждого подключаемого семейства и записать ссылки/проверку применимости до маркировки exact.",
+          "implementation_evidence": [
+            "research_v3/data/generators.py",
+            "research_v3/data/replay.py",
+            "research_v3/data/splits.py",
+            "research_v3/data/solver_programs.py",
+            "research_v3/tests/test_T03_data.py"
+          ],
+          "execution_evidence": [
+            "T03_REFERENCE_GATE_2026-10-01.json",
+            "T03_LOCAL_MAINFILE_POPULATION_2026-10-01.json",
+            "T03_LOCAL_ROOT_WORD_REPLAY_2026-10-01.json",
+            "T03_PRIMARY_ADAPTER_REVIEW_2026-10-01.json",
+            "T03_EXISTING_ROOT_SPLIT_AUDIT_2026-10-01.json",
+            "T03_STORED_SUFFIX_ADMISSION_AUDIT_2026-10-01.json",
+            "T03_NATIVE_ADMISSION_GATE_EXPORTED_2026-10-01.json",
+            "T03_PORTABILITY_PATCH_RECEIPT_2026-10-01.json",
+            "T03_V6_NATIVE_AND_GENERATION_2026-10-01.json",
+            "T03_STAGE23_25_READER_GATE_2026-10-01.json",
+            "T03_STAGE36_READER_GATE_2026-10-01.json",
+            "T03_V6_DURABLE_RESUME_2026-10-01.json",
+            "T03_STAGE38_PRIMARY_CONTRACTION_REVIEW_2026-10-01.json"
+          ],
+          "status": "partial",
+          "reason": "Reference gate passes 13 tests. Full sealed dev/test sets, production replay refresh exposure audit and guarded primary family-source gates remain open."
+        },
+        {
+          "source_line": 181,
+          "requirement": "GL(2,2) должен содержать 6 состояний, GL(3,2) — 168, GL(4,2) — 20 160. BFS не импортируется runtime solver. Отсутствие результата при budget limit не является exact distance.",
+          "implementation_evidence": [
+            "research_v3/data/generators.py",
+            "research_v3/data/replay.py",
+            "research_v3/data/splits.py",
+            "research_v3/data/solver_programs.py",
+            "research_v3/tests/test_T03_data.py"
+          ],
+          "execution_evidence": [
+            "T03_REFERENCE_GATE_2026-10-01.json",
+            "T03_LOCAL_MAINFILE_POPULATION_2026-10-01.json",
+            "T03_LOCAL_ROOT_WORD_REPLAY_2026-10-01.json",
+            "T03_PRIMARY_ADAPTER_REVIEW_2026-10-01.json",
+            "T03_EXISTING_ROOT_SPLIT_AUDIT_2026-10-01.json",
+            "T03_STORED_SUFFIX_ADMISSION_AUDIT_2026-10-01.json",
+            "T03_NATIVE_ADMISSION_GATE_EXPORTED_2026-10-01.json",
+            "T03_PORTABILITY_PATCH_RECEIPT_2026-10-01.json",
+            "T03_V6_NATIVE_AND_GENERATION_2026-10-01.json"
+          ],
+          "status": "verified",
+          "reason": "Complete BFS cardinalities 6/168/20160 and every full certificate replayed by named gate; budget-limit catalogs retain resource_limit."
+        },
+        {
+          "source_line": 182,
+          "requirement": "Тесты: `walk_return_has_ub_not_exact`, `nongeodesic_suffix_not_rank_label`, `same_state_minimum_verified_ub`, `restricted_certificate_not_global`, `unsupported_family_not_exact`.",
+          "implementation_evidence": [
+            "research_v3/data/generators.py",
+            "research_v3/data/replay.py",
+            "research_v3/data/splits.py",
+            "research_v3/data/solver_programs.py",
+            "research_v3/tests/test_T03_data.py"
+          ],
+          "execution_evidence": [
+            "T03_REFERENCE_GATE_2026-10-01.json",
+            "T03_LOCAL_MAINFILE_POPULATION_2026-10-01.json",
+            "T03_LOCAL_ROOT_WORD_REPLAY_2026-10-01.json",
+            "T03_PRIMARY_ADAPTER_REVIEW_2026-10-01.json",
+            "T03_EXISTING_ROOT_SPLIT_AUDIT_2026-10-01.json",
+            "T03_STORED_SUFFIX_ADMISSION_AUDIT_2026-10-01.json",
+            "T03_NATIVE_ADMISSION_GATE_EXPORTED_2026-10-01.json",
+            "T03_PORTABILITY_PATCH_RECEIPT_2026-10-01.json",
+            "T03_V6_NATIVE_AND_GENERATION_2026-10-01.json"
+          ],
+          "status": "verified",
+          "reason": "All named negative semantics covered; explicit nongeodesic suffix on identity with physical UB2 retains no exact/rank label after replay ingestion."
+        },
+        {
+          "source_line": 183,
+          "requirement": "Делить целыми lineages/генераторными seeds/семействами; учитывать известные T/inverse/relabel augmentations. Не обещать полную дешёвую canonicalization всех орбит.",
+          "implementation_evidence": [
+            "research_v3/data/generators.py",
+            "research_v3/data/replay.py",
+            "research_v3/data/splits.py",
+            "research_v3/data/solver_programs.py",
+            "research_v3/tests/test_T03_data.py"
+          ],
+          "execution_evidence": [
+            "T03_REFERENCE_GATE_2026-10-01.json",
+            "T03_LOCAL_MAINFILE_POPULATION_2026-10-01.json",
+            "T03_LOCAL_ROOT_WORD_REPLAY_2026-10-01.json",
+            "T03_PRIMARY_ADAPTER_REVIEW_2026-10-01.json",
+            "T03_EXISTING_ROOT_SPLIT_AUDIT_2026-10-01.json",
+            "T03_STORED_SUFFIX_ADMISSION_AUDIT_2026-10-01.json",
+            "T03_NATIVE_ADMISSION_GATE_EXPORTED_2026-10-01.json",
+            "T03_PORTABILITY_PATCH_RECEIPT_2026-10-01.json",
+            "T03_V6_NATIVE_AND_GENERATION_2026-10-01.json"
+          ],
+          "status": "partial",
+          "reason": "Existing 628-root snapshot has no cross-split family/seed unit and no declared finite symmetry holdout overlap. This covers this snapshot only; required 1792-panels and production refresh remain open."
+        },
+        {
+          "source_line": 184,
+          "requirement": "Раздельно вести множества `seen_as_label`, `seen_by_forward`, `seen_by_gradient`. Full-neighbor Bellman способен увидеть test M даже без метки; для строгой панели отбрасывать **родителя train**, если его полный successor set пересекает запрещённую панель, либо выбирать независимые размеры/семейства. Не удалять отдельного соседа из «полного» backup. Проверять это после каждого replay refresh, включая macro successors.",
+          "implementation_evidence": [
+            "research_v3/data/generators.py",
+            "research_v3/data/replay.py",
+            "research_v3/data/splits.py",
+            "research_v3/data/solver_programs.py",
+            "research_v3/tests/test_T03_data.py",
+            "research_v3/data/stream_reader_v13.py",
+            "research_v3/train/neural_refresh_solver_v13.py",
+            "research_v3/gpu/neural_beam.py",
+            "research_v3/tests/test_refresh_forward_admission.py",
+            "research_v3/objectives/bellman.py",
+            "research_v3/tests/test_bellman_macro_admission.py",
+            "research_v3/tests/test_molab_refresh_admission.py",
+            "research_v3/train/objective.py",
+            "research_v3/train/cuda_stream_v13.py",
+            "research_v3/data/model_exposure_journal_v1.py"
+          ],
+          "execution_evidence": [
+            "T03_REFERENCE_GATE_2026-10-01.json",
+            "T03_LOCAL_MAINFILE_POPULATION_2026-10-01.json",
+            "T03_LOCAL_ROOT_WORD_REPLAY_2026-10-01.json",
+            "T03_PRIMARY_ADAPTER_REVIEW_2026-10-01.json",
+            "T03_EXISTING_ROOT_SPLIT_AUDIT_2026-10-01.json",
+            "T03_STORED_SUFFIX_ADMISSION_AUDIT_2026-10-01.json",
+            "T03_REFRESH_FORWARD_ADMISSION_2026-10-01.json",
+            "T03_REFRESH_FORWARD_ADMISSION_V3_2026-10-01.json",
+            "T03_NATIVE_ADMISSION_GATE_EXPORTED_2026-10-01.json",
+            "T03_PORTABILITY_PATCH_RECEIPT_2026-10-01.json",
+            "T03_V6_NATIVE_AND_GENERATION_2026-10-01.json",
+            "T03_REFERENCE_ACTUAL_GRADIENT_GATE_2026-10-01.json",
+            "T03_CUDA_STREAM_EXPOSURE_WIRING_GATE_2026-10-01.json",
+            "T03_NATIVE_EXPOSURE_RESUME_VERIFIED_V12_2026-10-01.json",
+            "T03_EXPOSURE_LOGICAL_IDENTITY_REFERENCE_2026-10-01.json"
+          ],
+          "status": "unverified",
+          "reason": "Actual v12 CUDA field forward/backward and bounded deterministic optimizer/RNG/journal resume passed two tests. New logical identity schema CPU reference13 passed. Complete selected Bellman stream update, production exposure audit and full recovery remain open."
+        },
+        {
+          "source_line": 185,
+          "requirement": "Исторические девять целей исключить из label/replay/teacher; встречи в forward/gradient раскрывать. Новый подтверждающий набор заморозить до выбора v3 и открыть только после dev selection.",
+          "implementation_evidence": [
+            "research_v3/data/generators.py",
+            "research_v3/data/replay.py",
+            "research_v3/data/splits.py",
+            "research_v3/data/solver_programs.py",
+            "research_v3/tests/test_T03_data.py"
+          ],
+          "execution_evidence": [
+            "T03_REFERENCE_GATE_2026-10-01.json",
+            "T03_LOCAL_MAINFILE_POPULATION_2026-10-01.json",
+            "T03_LOCAL_ROOT_WORD_REPLAY_2026-10-01.json",
+            "T03_PRIMARY_ADAPTER_REVIEW_2026-10-01.json",
+            "T03_EXISTING_ROOT_SPLIT_AUDIT_2026-10-01.json",
+            "T03_STORED_SUFFIX_ADMISSION_AUDIT_2026-10-01.json",
+            "T03_NATIVE_ADMISSION_GATE_EXPORTED_2026-10-01.json",
+            "T03_PORTABILITY_PATCH_RECEIPT_2026-10-01.json",
+            "T03_V6_NATIVE_AND_GENERATION_2026-10-01.json"
+          ],
+          "status": "partial",
+          "reason": "Existing old v6 interrupted panel502 roots unsealed; required fresh1792 dev/test absent. Nine own historical roots and SHA inputs verified and quarantine enforced at admission; full generated finite-symmetry freeze still pending. Molab accessible; native v12 panel actively running."
+        },
+        {
+          "source_line": 186,
+          "requirement": "Gate: `python -B -m unittest research_v3.tests.test_T03_data -v`; split report публикует различия label-held-out, transductive и действительно unseen; сохранить хэши наборов.",
+          "implementation_evidence": [
+            "research_v3/data/generators.py",
+            "research_v3/data/replay.py",
+            "research_v3/data/splits.py",
+            "research_v3/data/solver_programs.py",
+            "research_v3/tests/test_T03_data.py"
+          ],
+          "execution_evidence": [
+            "T03_REFERENCE_GATE_2026-10-01.json",
+            "T03_LOCAL_MAINFILE_POPULATION_2026-10-01.json",
+            "T03_LOCAL_ROOT_WORD_REPLAY_2026-10-01.json",
+            "T03_PRIMARY_ADAPTER_REVIEW_2026-10-01.json",
+            "T03_EXISTING_ROOT_SPLIT_AUDIT_2026-10-01.json",
+            "T03_STORED_SUFFIX_ADMISSION_AUDIT_2026-10-01.json",
+            "T03_NATIVE_ADMISSION_GATE_EXPORTED_2026-10-01.json",
+            "T03_PORTABILITY_PATCH_RECEIPT_2026-10-01.json",
+            "T03_V6_NATIVE_AND_GENERATION_2026-10-01.json",
+            "T03_PERSISTED_SPLIT_AUDIT_REFERENCE_GATE_2026-10-01.json"
+          ],
+          "status": "partial",
+          "reason": "Actual persisted label/forward/gradient audit and full-key set hashes implemented and snapshot-bound, CPU reference verified. Full sealed1792 dev/test, production refresh exposures and complete native family panel remain open."
+        }
+      ],
+      "gate_commands": [
+        {
+          "command": "python -B -m unittest research_v3.tests.test_T03_data -v",
+          "current_file": "research_v3/tests/test_T03_data.py",
+          "exists": true,
+          "source_sha256": "eaef51ac751228d336eb29932e06e7238484a4e22c9aa2fbcea3e303f5a3562a",
+          "execution_status": "not_established_by_inventory"
+        }
+      ],
+      "v6_runtime_progress": {
+        "tests_passed": 21,
+        "native_exit_code": 0,
+        "source_commit": "c15fd0d0235f143a0c1a092afb7b7519eaee079e",
+        "historical_matrices_verified": 9,
+        "full_dev_panel": "terminal interrupted old v6 resume1; 502 committed roots, unsealed; original293 preserved; PID5442 zombie, no active generation",
+        "full_test_panel": "not generated",
+        "source_gates_23_25_36_38": "own pinned primary adapters now implemented and reference checked; native v12 full panel in progress, not full acceptance",
+        "production_training": "not launched"
+      },
+      "stage23_25_reference_progress": {
+        "recognizers": "implemented and full-word verified",
+        "generators": "implemented",
+        "replay_and_reader": "reference tested",
+        "all_gl3_checked": 168,
+        "recognized_counts": {
+          "23": 16,
+          "24": 12,
+          "25": 9
+        },
+        "native_gate": "v12 own full-width source diagnostics passed; each full word and reader checked. Full generated1792 panels and production integration remain open.",
+        "complete_neighbors_and_forward_exposures": "OPEN",
+        "source36_38": "OPEN",
+        "evidence": "T03_STAGE23_25_READER_GATE_2026-10-01.json"
+      },
+      "stage36_reference_progress": {
+        "family": "B* arbitrary C, consistent physical relabeling",
+        "source_gate": "primary hypotheses reviewed; independent global LB and full word checked",
+        "generator_replay_reader": "implemented/reference tested",
+        "native": "v12 own full-width source diagnostics passed; each full word and reader checked. Full generated1792 panels and production integration remain open.",
+        "production": "OPEN",
+        "evidence": "T03_STAGE36_READER_GATE_2026-10-01.json"
+      },
+      "stage38_reference_progress": {
+        "primary_contraction": "own Frontier primary implementation SHA verified on load",
+        "exact_guard": "stage37 r exclusion + positive integer r+1 amplitude + full word",
+        "all_gl3_states": 168,
+        "exact": 75,
+        "excluded_r_plus_one": 35,
+        "zero_excess_deferred_to37": 58,
+        "source_scope": "no uniform bounded temporal width for arbitrary endpoints",
+        "resource_limit": "explicit max_entries, not infeasibility",
+        "producer_replay_reader": "OPEN",
+        "native": "v12 terminal109 exact/3 resource limits overall; stage38 n108/122/144 unresolved; no infeasibility",
+        "evidence": "T03_STAGE38_PRIMARY_CONTRACTION_REVIEW_2026-10-01.json"
+      },
+      "current_native_source_panel": {
+        "schema": "T03_guarded_native_panel_terminal_v12",
+        "source_commit": "a91d309e698c6d5e8df96d3e280e464965e9b223",
+        "cell": "ubBc",
+        "pid": 15422,
+        "transport_session": 4207,
+        "returncode": 0,
+        "end_to_end_seconds": 782.5826045919985,
+        "planned_cases": 112,
+        "exact_cases": 109,
+        "resource_limit_cases": 3,
+        "all_admitted": false,
+        "resource_cases": [
+          {
+            "kind": "stage38_one_excess",
+            "n": 108,
+            "seed": 1510146,
+            "seconds": 0.06486705000133952
+          },
+          {
+            "kind": "stage38_one_excess",
+            "n": 122,
+            "seed": 1510160,
+            "seconds": 0.6044196980001288
+          },
+          {
+            "kind": "stage38_one_excess",
+            "n": 144,
+            "seed": 1510182,
+            "seconds": 0.6516191810005694
+          }
+        ],
+        "stage38_n90": {
+          "status": "exact",
+          "physical_cost": 91,
+          "seconds": 589.9253961880022
+        },
+        "scope": "native own source admission diagnostic; not benchmark code instances or production roots",
+        "report_remote": "/marimo/frontier61_recovery_v12/guarded_panel_112.json",
+        "report_digest": "not collected; Chrome CDP navigation unavailable",
+        "production_training_launched": false
+      }
+    },
+    {
+      "task": "T04",
+      "title": "Нижние границы и guarded recognizers",
+      "requirements": [
+        {
+          "source_line": 194,
+          "requirement": "Реализовать changed rows/columns, rank(M−I), guarded stage35 `n-components+zero_diagonal`, directional cut rank sum и verifier stage26. Stage26 сначала в reference scope после переноса всех условий исходника.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 195,
+          "requirement": "Зафиксировать обозначения: `components=c(M)` — число компонент **неориентированного внедиагонального support** с учётом изолированных проводов; ребро {i,j} существует при i≠j и `(M_ij=1 or M_ji=1)`. `zero_diagonal=z0(M)=#{i:M_ii=0}`. Для P0/P1 `r0(A,B)=#{i:A_i!=B_i}` — исходная рядовая LB из §1 stage37; при редукции A=M, B=I. Это r в первичном тексте и R в таблице coverage, а не rank(M−I) и не максимум всех доступных LB.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 196,
+          "requirement": "P0/P1 подключать только после проверки iff/полноты соответствующего алгоритма. `P0 exhaustive reject` исключает r0; `P0,P1 exhaustive reject` исключает r0 и r0+1. Выводы r0+1/r0+2 объединяются максимумом с остальными LB. Timeout/unsupported/heuristic failure не повышает LB.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 197,
+          "requirement": "Проверить `LB<=d_exact` на всех GL3 и заданной полной GL4 панели; deliberate sum-over-cuts overcount должен быть отвергнут. Cut bound проверяется также в требуемом направлении CNOT.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 198,
+          "requirement": "Тест `action_bound=cost(a)+LB(aM)` на всех допустимых соседях; это граница стоимости пути с **фиксированным первым ходом**, её нельзя без минимума использовать как LB на d(M).",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 199,
+          "requirement": "Gate: `python -B -m unittest research_v3.tests.test_T04_bounds -v`; точная метка создаётся лишь при verified UB=valid LB либо theorem-certified global value. Зафиксировать verifier versions.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        }
+      ],
+      "gate_commands": [
+        {
+          "command": "python -B -m unittest research_v3.tests.test_T04_bounds -v",
+          "current_file": "research_v3/tests/test_T04_bounds.py",
+          "exists": true,
+          "source_sha256": "d50a0f5ee338d2f6fe45c6a235aeca777a4f719d52602cadab3f25ed9c3f357e",
+          "execution_status": "not_established_by_inventory"
+        }
+      ]
+    },
+    {
+      "task": "T05",
+      "title": "Реализовать пользовательскую архитектуру",
+      "requirements": [
+        {
+          "source_line": 207,
+          "requirement": "Начальный профиль: d=128, pair_d=32, 6 structural blocks, 4 attention heads, FFN=256; 2 fusion blocks d=128/heads=4/FFN=256; dropout=0. Число feature families независимо и не ограничено шестью. Конфигурации d=192/256 — последующие измеряемые варианты.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 208,
+          "requirement": "Все доступные node/pair/group/global inputs входят до первого transformer. Group/global cross-attention использует incidence/roles. После structural blocks — специализированные feature embeddings, затем feature/wire fusion и `[DIST]` readout.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 209,
+          "requirement": "Основной V: `where(identity,0,softplus(raw_logit))`; не добавлять непроходимый `LB+softplus(excess)` floor для exact saturated examples. Внешнее LB clipping применяется отдельно в search mode, а train diagnostics используют V до clipping.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 210,
+          "requirement": "Тесты `all_enabled_families_reach_first_stem`, `value_gradient_reaches_both_transformers`, `relabel_padding_scalar_invariance`, `identity_zero_exact`, `nonterminal_output_finite`, `family_count_above_six`. Availability masks полностью отключают отсутствующие tokens.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 211,
+          "requirement": "Повторить diagnostic collision I+A(C10) vs I+A(C5⊔C5) для old/new encoder. Эти матрицы проверяют выразительность; без сертифицированно разных d их различение не считается доказательством улучшения distance model.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 212,
+          "requirement": "Gate: `python -B -m unittest research_v3.tests.test_T05_model -v`; pooled control получает тот же input bank и сопоставимый param/FLOP budget. Snapshot новой schema.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        }
+      ],
+      "gate_commands": [
+        {
+          "command": "python -B -m unittest research_v3.tests.test_T05_model -v",
+          "current_file": "research_v3/tests/test_T05_model.py",
+          "exists": true,
+          "source_sha256": "5699c38cd8fb7e8b03fdecd7f2010d8daca5efd778ac572bff45e4f6d57fd551",
+          "execution_status": "not_established_by_inventory"
+        }
+      ]
+    },
+    {
+      "task": "T06",
+      "title": "Full-gradient Bellman и сильный честный сигнал",
+      "requirements": [
+        {
+          "source_line": 220,
+          "requirement": "На M≠I выбирать минимум по **всем** допустимым primitive successors с no_grad; при тех же theta/packets пересчитать V(M) и выбранное V(aM) с autograd. На I применять boundary condition, не ненулевой backup.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 221,
+          "requirement": "Включить exact Huber, two-sided verified interval hinge, verified path Lipschitz inequality и total-V symmetry loss. Не считать random-walk UB или raw teacher cost истинным d.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 222,
+          "requirement": "Для макросов проверить раздельно inequality `V(M)<=c+V(N)` и mixed backup. При V=d macro value не меньше primitive minimum; strict winners могут отсутствовать у идеального V. Логировать margin/ties/active-gradient, не только winners.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 223,
+          "requirement": "Proposal CE трактовать как imitation доступного portfolio. Qhat обучать абсолютному detached `cost(a)+V(aM)`, а не только centered targets; diagonal/padding mask, known identity-successor target=1 для unit costs. Proposal logits не сравнивать между разными parents как длины.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 224,
+          "requirement": "Тесты: `selected_gradient_equals_all_neighbor_autograd` в float64 при unique minimum; при ties сравнивать с тем же deterministic first-index branch, не усредняющей производной. `changed_packet_rejected`, `changed_theta_rejected`, `terminal_has_no_cost_one_residual`, `parent_offsets_detected_by_absolute_qhat`, `V_equals_d_has_no_strict_macro_win`.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 225,
+          "requirement": "Для proposal/Qhat вход V по умолчанию detached; shared encoder gradients остаются видимыми. Отдельно проверить full-shared/detached/last-block-separated routing по dev, сохранив один основной V.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 226,
+          "requirement": "Gate: `python -B -m unittest research_v3.tests.test_T06_gradients -v`; CPU float64 max abs gradient error≤1e-8, GPU tolerance заранее фиксируется в протоколе. Не менять tolerance после неудачи.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        }
+      ],
+      "gate_commands": [
+        {
+          "command": "python -B -m unittest research_v3.tests.test_T06_gradients -v",
+          "current_file": "research_v3/tests/test_T06_gradients.py",
+          "exists": true,
+          "source_sha256": "068c805a24ca26424fce04f28dabda85ad5aaead5b9a83377b388c7a914fca0d",
+          "execution_status": "not_established_by_inventory"
+        }
+      ]
+    },
+    {
+      "task": "T07",
+      "title": "Собственный stage17 objective и amortized basis proposer",
+      "requirements": [
+        {
+          "source_line": 234,
+          "requirement": "Template описывает упорядоченные реальные gate/swap choices, a_j∈{1,3}, физические source/target группы. Для каждого eta сохранить тождество D=TBS⁻¹ и полный оператор B; не штрафовать нарушенный endpoint вместо его построения.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 235,
+          "requirement": "Реализовать exact J=2Σa_j theta_j+E|D_local(eta)|₀, exact message contraction, градиент и conditional rounding. Оценка O(K2^w) относится к исходному классу stage17: одна выбранная сторона, w двоичных координат сообщения, K заданных переключателей, остальные параметры зафиксированы. В template хранить `side`, `group_wires`, `frozen_frame`; preprocessing матрицы/гистограммы и материализация выходного слова считаются отдельно. Общий одновременно двусторонний или correlated шаблон из T08 не получает эту сложность автоматически. Для small K сверить с полным 2^K перечислением и конечными разностями.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 236,
+          "requirement": "Численная conditional rounding принимает итог только после точной integer-cost и endpoint проверки. В точной арифметике округление не увеличивает J; float evaluation требует погрешности, не безусловной гарантии по округлённым числам.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 237,
+          "requirement": "Контрпример `J=61+3p+q−6pq`: проверить нулевую стационарную ловушку constrained descent и `(p,q)=(1,1)` с J=59. Сравнивать zero, midpoint, multistart и learned initialization при одинаковом числе exact objective evaluations.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 238,
+          "requirement": "Stage19–20 convex/min-cut variants включать через explicit eligible predicate; forbidden multilevel TV/generic nonconvex J возвращает unsupported. Выпуклость в локальных variables не распространяется на theta-веса transformer.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 239,
+          "requirement": "Gate: `python -B -m unittest research_v3.tests.test_T07_basis -v`; каждый sampled/rounded candidate реализует тот же B с ценой `2L_S+2L_T+popcount(D)`. Сохранить prep/core/restore attribution.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        }
+      ],
+      "gate_commands": [
+        {
+          "command": "python -B -m unittest research_v3.tests.test_T07_basis -v",
+          "current_file": "research_v3/tests/test_T07_basis.py",
+          "exists": true,
+          "source_sha256": "15d1dc5dd8b9f82c917bd04d8ff3a683af49aa9d5ba89e143bcad57e9e5a2343",
+          "execution_status": "not_established_by_inventory"
+        }
+      ]
+    },
+    {
+      "task": "T08",
+      "title": "Широкие блоки и совместные варианты программы",
+      "requirements": [
+        {
+          "source_line": 247,
+          "requirement": "Разрешить произвольную физическую ширину w в schema, без скрытого w≤4. Exact backend оценивает memory/time до аллокации; невозможность 2^w contraction не маскируется снижением ширины.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 248,
+          "requirement": "Сохранять пару независимых механизмов: точные последовательные координатные группы внутри широкого B и глобальный correlated шаблон с общими choices. Локальный проход по группам не называется глобальным оптимумом широкого блока.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 249,
+          "requirement": "Для точного прямого J использовать stage60 response backend после T19; до этого статус unsupported. Для MC независимых Bernoulli choices допустима coordinate estimator `dJ/dtheta_j=2a_j+E_eta[-j][C(eta_j=1)-C(eta_j=0)]` с общими samples; он определён и на theta_j=0/1. Correlated distributions требуют своего score/reparameterization estimator и записанной формулы.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 250,
+          "requirement": "На small K сравнить математическое ожидание estimator с exhaustive gradient; статистическая проверка на конечном sample не заменяет равенство ожиданий. Отчёт включает variance/SE/sample budget; biased truncation не называется exact gradient.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 251,
+          "requirement": "Все полные branch words должны быть допустимы по построению. Endpoint-penalty-only relaxation хранится только как отрицательный контроль. Для postprocessed reward предусмотреть отдельную auxiliary/control-variate оценку, не присваивать ему derivative J17.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 252,
+          "requirement": "Gate: `python -B -m unittest research_v3.tests.test_T08_wide -v`; broad B, ограниченная память, resource_limit, correlated coordinated-benefit и verified integer acceptance. Профили w=8/16/32 запускаются как измерение, без обещания exact tractability.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        }
+      ],
+      "gate_commands": [
+        {
+          "command": "python -B -m unittest research_v3.tests.test_T08_wide -v",
+          "current_file": "research_v3/tests/test_T08_wide.py",
+          "exists": true,
+          "source_sha256": "b2a92d5ffe1a5744f41e60c965334b4c151ecd5cc751e416b4184e0c9376568e",
+          "execution_status": "not_established_by_inventory"
+        }
+      ]
+    },
+    {
+      "task": "T09",
+      "title": "Сохранение оплаченного базиса между блоками",
+      "requirements": [
+        {
+          "source_line": 260,
+          "requirement": "Frame используется как representation/compiler bookkeeping с точной картой к physical M. Для primitive shortest-path задачи достаточно полной M; скрытые скидки по прошлой истории запрещены.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 261,
+          "requirement": "Композировать реальные prep/core/restore words; отменять только доказанно одинаковые соседние inverse операции или корректные commuting transformations. Не считать произвольные GL преобразования бесплатными.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 262,
+          "requirement": "Тесты: два блока с одинаковой подготовкой против разных; noncommuting preparation order; три CNOT физического SWAP; произвольные начальные значения target wires; финальное восстановление всех проводов.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 263,
+          "requirement": "В macro training/search передавать настоящий endpoint и фактическую раскрытую стоимость. Макрос с незавершённым frame допустим лишь при точном physical endpoint либо явном expanded-state model с отдельным critic, не прежним d(M).",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 264,
+          "requirement": "Gate: `python -B -m unittest research_v3.tests.test_T09_frames -v`; полный word product равен композиции и стоимость равна реально оставшимся gates.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        }
+      ],
+      "gate_commands": [
+        {
+          "command": "python -B -m unittest research_v3.tests.test_T09_frames -v",
+          "current_file": "research_v3/tests/test_T09_frames.py",
+          "exists": true,
+          "source_sha256": "db245249fd823f706e6d1936c4e96b8a7158d485b42c9849507d1b1d0bcae51d",
+          "execution_status": "not_established_by_inventory"
+        }
+      ]
+    },
+    {
+      "task": "T10",
+      "title": "Postprocessing и endpoint-preserving окна",
+      "requirements": [
+        {
+          "source_line": 272,
+          "requirement": "Реализовать inverse/transpose/relabel перезапуски собственного compiler и mapping back; отдельно реальные window substitutions/commuting expansions/endpoint repair28. Повторное обучение модели не смешивается с этим контролем.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 273,
+          "requirement": "Тесты включают off-support wires, noncommuting boundary, несовпадающий endpoint при одинаковом hash и valid replacement только после полного word verification.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 274,
+          "requirement": "Применять улучшение лишь при строго меньшей физической длине; equal-length варианты могут участвовать в отдельном diversity mode, без ложного счётчика savings. Сохранить no-improvement outcomes.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 275,
+          "requirement": "Проверить отсутствие скрытого `time_limit` у вызываемых legacy helpers; текущий `code/general_macro.py` имеет такой аргумент. Использовать явный evaluations/passes budget и проверенную новую обёртку, не предполагать, что старое значение уже удалено везде.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 276,
+          "requirement": "Gate: `python -B -m unittest research_v3.tests.test_T10_windows -v`; postprocess attribution сообщает delta отдельно от raw synthesis и от symmetry restart.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        }
+      ],
+      "gate_commands": [
+        {
+          "command": "python -B -m unittest research_v3.tests.test_T10_windows -v",
+          "current_file": "research_v3/tests/test_T10_windows.py",
+          "exists": true,
+          "source_sha256": "056433dbf6fbd852f584c91d75f576c5a74e692c0e94f417fcc2bf6a53d077c8",
+          "execution_status": "not_established_by_inventory"
+        }
+      ]
+    },
+    {
+      "task": "T11",
+      "title": "Поиск полной программы и честные результаты",
+      "requirements": [
+        {
+          "source_line": 284,
+          "requirement": "Reference разворачивает полную M. Проверять identity до pruning/caps, dedup делать по полной матрице, учитывать best g и reopening; closed filtering до top-k, отброшенное состояние не объявлять посещённым навсегда.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 285,
+          "requirement": "При разной цене edges сравнивать физическое g+score; «слой макросов» не равен физической длине. Hamming — отдельно именованный baseline, без скрытого prefilter в neural variants.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 286,
+          "requirement": "Для proposal topK явно `approximate=true`; при K=all режим должен воспроизводить direct V при одинаковых tie rules. Порог shortlist выбирается по dev recall/regret, не по benchmark рекорду.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 287,
+          "requirement": "При нескольких minimizers раздельно считать `best_set_hit` (хотя бы один лучший successor попал в shortlist) и `minimizer_coverage` (доля всего множества лучших). Первый нужен для сохранения значения backup; второй дополнительно описывает потерю разнообразия. Отсутствие остальных равных minima само по себе не ухудшает minimum.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 288,
+          "requirement": "Тесты: goal behind bad score, duplicate shortest path, state reopened with better g, macro cost>1, complete failure cannot become neural success via fallback, cross-parent additive-Q bias regression.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 289,
+          "requirement": "Encoder/reduction mapping и независимый `verify_word` обязательны перед статусом solved. Для failed result `raw_neural_word=null`; incumbent хранится в другом поле.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 290,
+          "requirement": "Gate: `python -B -m unittest research_v3.tests.test_T11_search -v`; на exact-small сравнить найденные полные слова с d, не объявляя beam всегда оптимальным. Save full traces/provenance.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        }
+      ],
+      "gate_commands": [
+        {
+          "command": "python -B -m unittest research_v3.tests.test_T11_search -v",
+          "current_file": "research_v3/tests/test_T11_search.py",
+          "exists": true,
+          "source_sha256": "775545d97040dae93cf9d0e9f308b157b975c30546cb798a51c8e48014aa4638",
+          "execution_status": "not_established_by_inventory"
+        }
+      ]
+    },
+    {
+      "task": "T12",
+      "title": "Обучение, refresh, checkpoints и продолжение",
+      "requirements": [
+        {
+          "source_line": 298,
+          "requirement": "Сохранить weights, optimizer, schedule, all RNGs, sampler/replay cursor, feature/cache/probe versions и источник каждого label. Resume на другой schema/family map запрещён; частичный transfer weights — отдельный run с явным migration report и новым optimizer для новых параметров.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 299,
+          "requirement": "Расписание exact-small/guarded families/paid-basis/walks и размеров фиксируется до запуска. Wide examples и trace labels не заменяются молча small exact из-за стоимости.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 300,
+          "requirement": "Обновлять только train teacher/replay по верифицированным новым словам; журналировать, на каком update данные реально вошли в обучение. Финальные улучшенные teacher words не объявлять обучавшими уже законченный checkpoint.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 301,
+          "requirement": "Тест `4+4 resume == 8 uninterrupted` на CPU deterministic reference включает parameters/optimizer/sampler и следующие minibatches. Native допускает только заранее заданный численный tolerance и сравнительный semantic test; неудачный старый resume gate не «исправляется» увеличением tolerance без причины.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 302,
+          "requirement": "Сохранять last и dev-selected best отдельно, immutable snapshots + atomic pointer. Не запускать второй training процесс поверх существующего run/output. Число updates явно задано; wall-clock stopper отсутствует.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 303,
+          "requirement": "Зафиксировать единый транзитивный selection key на полном dev-наборе: сначала больше solved roots, затем меньше сумма нормированных case-costs с заранее фиксированными penalties неуспеха, затем compute/tie rule. Попарное среднее на common-solved subset публикуется как описательная метрика и не определяет порядок множества checkpoints. Конкретные penalties и Uref согласуются с протоколом до запуска.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 304,
+          "requirement": "Fault injection nonfinite loss/gradient проверяет отсутствие изменения parameters и optimizer moments при отклонённом update; rejected step явно учитывается в schedule, а не незаметно считается выполненным успешным обновлением.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 305,
+          "requirement": "Gate: `python -B -m unittest research_v3.tests.test_T12_resume -v`; все новые checkpoint SHA/manifest читаются и подтверждаются. Training launch — следующий отдельный этап реализации, не действие этого плана.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        }
+      ],
+      "gate_commands": [
+        {
+          "command": "python -B -m unittest research_v3.tests.test_T12_resume -v",
+          "current_file": "research_v3/tests/test_T12_resume.py",
+          "exists": true,
+          "source_sha256": "ed1378c8b5a20cb426dc9d0115d502eb7c8c0e87e9e26b8b32bd34e67d558130",
+          "execution_status": "not_established_by_inventory"
+        }
+      ]
+    },
+    {
+      "task": "T13",
+      "title": "Сырая диффузионная масса и совместные признаки",
+      "requirements": [
+        {
+          "source_line": 313,
+          "requirement": "Контроль: uniform ordered CNOT, Q=P−I, общая интенсивность 1, t=n·tau, tau=(1/4,1,4,16); t=0 и n=1 обрабатываются отдельно. Нельзя удалять обратные шаги из этого процесса.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 314,
+          "requirement": "Single-column source-relative states `(b,k)` исключают нулевой вектор; подтвердить lumped rates и равномерность внутри класса именно для начального e_j. Не переносить это доказательство на arbitrary labeled starts.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 315,
+          "requirement": "Two-column histogram h=(h00,h10,h01,h11), rank2 orbit: transitions h_a(h_b−delta_ab), target b→b xor a, включая self-loops. Число states C(n+3,3)−1−3n; N_h=n!/prod h_a!, pi_h=N_h/((2^n−1)(2^n−2)). Initial histogram — часть запроса.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 316,
+          "requirement": "Тесты n=2..6: total rates n(n−1), nonnegative counts, class sizes и detailed balance; сравнить semigroup проекции с full GL3 на выбранных times. При t=0 histogram mass1 не превращается в вероятность1/N_h конкретного endpoint без exchangeability.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 317,
+          "requirement": "MC moments всех колонок используют один W, а не независимые words. Тест выявляет исчезновение ковариации при независимых путях. Floors/log normalization сохраняют отдельный raw_class_mass и не создают exact zero из underflow.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 318,
+          "requirement": "Gate: `python -B -m unittest research_v3.tests.test_T13_diffusion -v`; exact generator≠exact floating semigroup, погрешность численной экспоненты отражена. Стоимость O(n³) pair state space учитывается до включения в каждый forward.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        }
+      ],
+      "gate_commands": [
+        {
+          "command": "python -B -m unittest research_v3.tests.test_T13_diffusion -v",
+          "current_file": "research_v3/tests/test_T13_diffusion.py",
+          "exists": true,
+          "source_sha256": "802b5d92239391f1438f4313496deff013707be4cf0822b826c7448571b4e8da",
+          "execution_status": "not_established_by_inventory"
+        }
+      ]
+    },
+    {
+      "task": "T14",
+      "title": "Native/export и измерение полной стоимости",
+      "requirements": [
+        {
+          "source_line": 326,
+          "requirement": "Сначала parity exact state/gates/masks, затем V/proposal/Qhat на n=1/3/4 и физических n=13/25/34/45/58/72/90/108/144. Invalid entries сравниваются по masks, не вычитанием inf−inf.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 327,
+          "requirement": "Full-gradient probe сравнивает selected branch/gradients до применения optimizer; native resume проверяется отдельно от inference parity. New fusion schema не подсовывается старому runtime под тем же ID.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 328,
+          "requirement": "Отдельно измерять packing, host-device transfer, feature construction, encoder, fusion, all-neighbor sweep, selection и full-word verification; cold/warm cache режимы различаются.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 329,
+          "requirement": "Сначала contiguous packed/SoA arrays и batch/chunk reuse; custom kernels вводить после профиля. Не обещать дешёвый exact update всего transformer из одного row XOR.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 330,
+          "requirement": "Gate: `python -B -m unittest research_v3.tests.test_T14_export -v`, затем hardware parity по фиксированным tolerances протокола. CPU/source review не отмечает GPU gate выполненным.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        }
+      ],
+      "gate_commands": [
+        {
+          "command": "python -B -m unittest research_v3.tests.test_T14_export -v",
+          "current_file": "research_v3/tests/test_T14_export.py",
+          "exists": true,
+          "source_sha256": "50c32f30ee84e5684930d4d354e0d1957bafa8e65ebd01fedb6cf576430ed934",
+          "execution_status": "not_established_by_inventory"
+        }
+      ]
+    },
+    {
+      "task": "T15",
+      "title": "Типы границ, весов и композиции",
+      "requirements": [
+        {
+          "source_line": 338,
+          "requirement": "Перенести ordered ports, initial protected relation, multiplicity и noncommuting order; ранги не заменяют relation matrices. Явно различать counts assignments, words, traces и diagram coefficients.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 339,
+          "requirement": "Тесты stages39/43/52/53/58: одинаковый rank с разной relation; equal endpoint при разных multiplicities; cross-term da′; protected-initial projection; subset relation R⊂kerX против exact-kernel equality.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 340,
+          "requirement": "Signed affine/Gauss representation не допускает min/count semiring до корректной positive projection. Cell-degree τ и physical z никогда не смешиваются без явной карты градуировки.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 341,
+          "requirement": "Обязательные отрицательные fixtures: restricted/full alphabet distance4/1 из40, premature port forgetting, product independent histograms, подстановка target в промежуточную границу.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 342,
+          "requirement": "Gate: `python -B -m unittest research_v3.tests.test_T15_relations -v`; composition сравнивается с exhaustive tiny boundary enumeration.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        }
+      ],
+      "gate_commands": [
+        {
+          "command": "python -B -m unittest research_v3.tests.test_T15_relations -v",
+          "current_file": "research_v3/tests/test_T15_relations.py",
+          "exists": true,
+          "source_sha256": "ac2d220d6552df99d7b8eebb2c52e7c1f8c3e42dd285b814c5509483a4fdcd23",
+          "execution_status": "not_established_by_inventory"
+        }
+      ]
+    },
+    {
+      "task": "T16",
+      "title": "Проверенные локальные response kernels",
+      "requirements": [
+        {
+          "source_line": 350,
+          "requirement": "Последовательно adapters29–30, pair/global35, restricted3-row36, influence47–48, feedback49–50, dynamic source51. Перед adapter читать полные гипотезы и построить tiny full-alphabet reference fixture.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 351,
+          "requirement": "Тест stage36 outside-row excursion5<restricted6 запрещает global optimal label от restricted3-row formula. Separate special exact family требует своего recognizer.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 352,
+          "requirement": "Проверить stage49 zero rule только для γ¹ при полном условии восстановления private column; не запрещать все нечётные степени. Stage50 core-return не равен private-column restore; две excursions могут компенсироваться.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 353,
+          "requirement": "Rational interval certificate и exact rational-function identity имеют разные result kinds. Для51 сохранить gap: исходная запись 544 values/14 независимых пересчётов не означает проверку всех 544 здесь.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 354,
+          "requirement": "Gate: `python -B -m unittest research_v3.tests.test_T16_local -v`; only eligible kernel outputs поступают в I-features/auxiliary labels, с scope и measured cost.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        }
+      ],
+      "gate_commands": [
+        {
+          "command": "python -B -m unittest research_v3.tests.test_T16_local -v",
+          "current_file": "research_v3/tests/test_T16_local.py",
+          "exists": true,
+          "source_sha256": "444af5829e68e22cfeec7e059a58712a02e2534f852f1653abb29870c6ca9c20",
+          "execution_status": "not_established_by_inventory"
+        }
+      ]
+    },
+    {
+      "task": "T17",
+      "title": "Сжатие поля с явной ошибкой",
+      "requirements": [
+        {
+          "source_line": 362,
+          "requirement": "Galerkin/Krylov31: перенести actual `RᵀK⁻¹R` error expression с гипотезами, стоимость сборки K и решения. Малый reduced rank не скрывает дорогой full operator build.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 363,
+          "requirement": "Для signed/Fourier reconstruction relative error допустима только при положительной certified lower bound знаменателя; иначе выдавать absolute/unknown.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 364,
+          "requirement": "Fixtures32–34/53: spurious early degrees, insufficient modes, degree-preserving rank requirement R≥d+1 в своём action class, freezing rank и average-resolvent inequality.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 365,
+          "requirement": "Gate: `python -B -m unittest research_v3.tests.test_T17_compression -v`; интервалы покрывают exact tiny answers. Использование compressed response в learned features не превращает его в certified distance.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        }
+      ],
+      "gate_commands": [
+        {
+          "command": "python -B -m unittest research_v3.tests.test_T17_compression -v",
+          "current_file": "research_v3/tests/test_T17_compression.py",
+          "exists": false,
+          "source_sha256": null,
+          "execution_status": "not_established_by_inventory"
+        }
+      ]
+    },
+    {
+      "task": "T18",
+      "title": "Bilinear/shared interface backends",
+      "requirements": [
+        {
+          "source_line": 373,
+          "requirement": "Adapters52/54/55/56: cross-term composition, visible-rank conditions, полный future-port набор, signed/positive weights, exact forgetting через intersection.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 374,
+          "requirement": "Тест `rank(Cbar)>k` даёт exact zero только после проверки всех stage55 affine compatibility hypotheses. Несовместимые ports и unsupported cost model — отдельные причины.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 375,
+          "requirement": "Не применять rank-invariant convolution к physical shear cost popcount без доказательства инвариантности. Ωda при всех variables — кубичный член; quadratic eliminator обязан отвергать такой неверно объявленный ввод.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 376,
+          "requirement": "Тесты tiny enumeration: одинаковый rank/different relation, noncommuting chain order, counts assignments против words, boundary growth budget limit.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 377,
+          "requirement": "Gate: `python -B -m unittest research_v3.tests.test_T18_bilinear -v`; generic network, не покрытая source chain/contour assumptions, возвращает unsupported.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        }
+      ],
+      "gate_commands": [
+        {
+          "command": "python -B -m unittest research_v3.tests.test_T18_bilinear -v",
+          "current_file": "research_v3/tests/test_T18_bilinear.py",
+          "exists": false,
+          "source_sha256": null,
+          "execution_status": "not_established_by_inventory"
+        }
+      ]
+    },
+    {
+      "task": "T19",
+      "title": "Positive/universal и quadratic reference solver",
+      "requirements": [
+        {
+          "source_line": 385,
+          "requirement": "Stage57 replicas используют один и тот же physical gate во всех копиях; n+1 replicas не считаются n+1 маленькими независимыми операторами. Stage58 positive relation projection сохраняет multiplicity и initial boundary.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 386,
+          "requirement": "Stage59 exact linear syndrome separator κ определяет конкретный interface; κ=0 selector space не удаляет physical operator space. Stage60 сохраняет полный future response `(alpha,B)` и weighted contributions.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 387,
+          "requirement": "Сверить coefficients/минимумы на n=2/3 и горизонтах0–4 с независимым direct enumeration. Для horizon-exhausted distinguish certified_no_solution_within_scope от unknown/resource_limit и от global no-solution.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 388,
+          "requirement": "Подключить bridge к широкому J17 T08 только если exact weighted expectation/gradient и endpoint-template bijection сверены на exhaustive small K. Усечённая contraction не имеет статуса exact gradient.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 389,
+          "requirement": "Gate: `python -B -m unittest research_v3.tests.test_T19_reference -v`; witness полный, labels scoped. Большой compiled HGP13 network не помечается solved только за успешную компиляцию.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        }
+      ],
+      "gate_commands": [
+        {
+          "command": "python -B -m unittest research_v3.tests.test_T19_reference -v",
+          "current_file": "research_v3/tests/test_T19_reference.py",
+          "exists": false,
+          "source_sha256": null,
+          "execution_status": "not_established_by_inventory"
+        }
+      ]
+    },
+    {
+      "task": "T20",
+      "title": "Обучаемый порядок contraction",
+      "requirements": [
+        {
+          "source_line": 397,
+          "requirement": "Policy может выбирать порядок exact eliminations из59–60 и guarded approximations из **задачи T17**. Итог exact contraction при завершении должен быть независим от порядка; стоимость может различаться. Приближённый результат имеет отдельный статус и error certificate; он не проходит exact order-invariance gate по одному сходству чисел. На малом reference проверять покрытие точного ответа каждым сертификатом, а на большом — корректность условий и самого сертификата без заявления exact equality.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 398,
+          "requirement": "Gradient через завершённую weighted contraction сравнить с exhaustive reference и finite differences. Discrete order policy имеет свой estimator; её обучение не называется градиентным решением d(M).",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 399,
+          "requirement": "Проверить maximum boundary width, actual counts/bytes, allocation refusal и status unknown при лимите; memory-limited pruning не может вернуть certified zero без доказательства.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 400,
+          "requirement": "Gate: `python -B -m unittest research_v3.tests.test_T20_ordering -v`; одинаковый exact result для нескольких orders и отдельная сравнительная cost panel.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        }
+      ],
+      "gate_commands": [
+        {
+          "command": "python -B -m unittest research_v3.tests.test_T20_ordering -v",
+          "current_file": "research_v3/tests/test_T20_ordering.py",
+          "exists": false,
+          "source_sha256": null,
+          "execution_status": "not_established_by_inventory"
+        }
+      ]
+    },
+    {
+      "task": "T21",
+      "title": "Connected Wick61 как отдельная certificate задача",
+      "requirements": [
+        {
+          "source_line": 408,
+          "requirement": "Реализовать topology bookkeeping и grading L−n+c, connected L−n+1 в условиях stage61. Не подавать неизвестную L или loop count, вычисленный из эталонного ответа, в features модели.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 409,
+          "requirement": "Тесты tiny states: coefficients, annihilating polynomial, exact integer arithmetic/overflow rejection, consistency с independent words. `UNCOMPUTED_LIMIT` не нулевой коэффициент.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 410,
+          "requirement": "HGP13 q≤6 остаётся отдельным открытым вычислением до actual full contraction. Прежний witness19/loop7 не доказывает новые нули и не является новым результатом синтеза.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 411,
+          "requirement": "Gate: `python -B -m unittest research_v3.tests.test_T21_wick -v`; отчёт перечисляет именно вычисленные orders и scope. Отсутствующие orders явно unknown.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        }
+      ],
+      "gate_commands": [
+        {
+          "command": "python -B -m unittest research_v3.tests.test_T21_wick -v",
+          "current_file": "research_v3/tests/test_T21_wick.py",
+          "exists": false,
+          "source_sha256": null,
+          "execution_status": "not_established_by_inventory"
+        }
+      ]
+    },
+    {
+      "task": "T22",
+      "title": "Независимый аудит специальных сертификатов",
+      "requirements": [
+        {
+          "source_line": 419,
+          "requirement": "Для41–46 перенести исправленный transpose rule, past/current/restore constraints и coverage всех секторов. Наличие phase title «complete» не заменяет exhaustive coverage.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 420,
+          "requirement": "Stage44: отдельно проверить witness19, sector inventory (необходимые и избыточные), completion records и reproducibility большого computational certificate. Прежний archive result не объявлять заново доказанным без этих gates.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 421,
+          "requirement": "Stage45/46 analytic cases и stage49 single-use conditions включать лишь в доказанном scope; counterexamples помещать в negative fixtures.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 422,
+          "requirement": "HGP13 certificate остаётся audit/evaluation asset и не используется как training label/feature; такой источник может закрывать optimality только соответствующей матрицы/hash/alphabet.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 423,
+          "requirement": "Gate: `python -B -m unittest research_v3.tests.test_T22_certificates -v`; unit tests проверяют verifier и incomplete-sector rejection. Большой повтор и Lean formalization имеют собственные явные статусы, не автоматически «passed» от unit tests.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        }
+      ],
+      "gate_commands": [
+        {
+          "command": "python -B -m unittest research_v3.tests.test_T22_certificates -v",
+          "current_file": "research_v3/tests/test_T22_certificates.py",
+          "exists": false,
+          "source_sha256": null,
+          "execution_status": "not_established_by_inventory"
+        }
+      ]
+    },
+    {
+      "task": "T23",
+      "title": "Абляции, полные программы и таблица сравнения",
+      "requirements": [
+        {
+          "source_line": 431,
+          "requirement": "Лестница: old pooled/fusion fixed bank; A/B/C/D/E/G/H families и leave-one-family-out; UB-only/proposal-only/combined basis data; local J proposer; full/macro search; raw/postprocessing/symmetry. Сохранять одинаковые underlying states/action subsets при проверке именно certificate quality.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 432,
+          "requirement": "Две оси затрат: одинаковый algorithmic budget и измеренная end-to-end стоимость. Если для анализа строится equal-time slice, это заранее объявленный аналитический срез полных traces, не скрытая остановка обучения. Показывать total training cost отдельно.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 433,
+          "requirement": "Main result: n, canonical matrix key, allowed source, external length/source/matrix-match status, own compiler, raw NN, postprocessed NN, best portfolio, integer delta и percent, solved status, physical length/depth, time и budgets. Метод авторов Ours и наш метод подписываются раздельно.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 434,
+          "requirement": "Внешняя дельта допустима только для одной и той же полной M/алфавита/цен. Совпадение [[n,k;c]] не является таким доказательством. EA с неподтверждёнными допустимыми исходниками получает `input_unresolved`, не подставленные числа.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 435,
+          "requirement": "Тесты `failure_is_not_incumbent`, `matrix_mismatch_blocks_delta`, `missing_is_not_zero`, `training_cost_not_solve_time`, `sum_only_common_solved_set`; aggregate all-case таблица сохраняет failures/coverage и не скрывает их средним по успехам.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 436,
+          "requirement": "Gate: `python -B -m unittest research_v3.tests.test_T23_reporting -v`; все solved rows независимо перемножаются, checkpoint выбирается только по dev. Нулевые/отрицательные эффекты сохраняются.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        }
+      ],
+      "gate_commands": [
+        {
+          "command": "python -B -m unittest research_v3.tests.test_T23_reporting -v",
+          "current_file": "research_v3/tests/test_T23_reporting.py",
+          "exists": false,
+          "source_sha256": null,
+          "execution_status": "not_established_by_inventory"
+        }
+      ]
+    },
+    {
+      "task": "T24",
+      "title": "Интеграция и воспроизводимый итог",
+      "requirements": [
+        {
+          "source_line": 444,
+          "requirement": "Проверить все ссылки T00–T24 и source coverage17–61: каждому результату соответствует implementation, data/oracle, verifier, negative test или явно открытое research item. Не выдавать заполненную таблицу планирования за закрытые задачи.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 445,
+          "requirement": "Запуск reference `verify` из чистой отдельной run-папки воспроизводит каждую заявленную chain/матрицу. Training/checkpoint restoration проверяется собственным gate, не только загрузкой файла.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 446,
+          "requirement": "Сравнить результаты raw field, собственных basis macros и postprocessing; перечислить, какой фактор реально сократил длину. Если NN не выиграла, итог так и формулируется.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        },
+        {
+          "source_line": 447,
+          "requirement": "Gate: `python -B -m unittest research_v3.tests.test_T24_release -v`; отчёт содержит completed/failed/unknown по всем задачам, все обязательные source/contract gates и цену воспроизведения. Только после этого можно заявлять выполненную соответствующую часть плана.",
+          "implementation_evidence": [],
+          "execution_evidence": [],
+          "status": "unverified",
+          "reason": "No requirement-specific acceptance inferred by inventory"
+        }
+      ],
+      "gate_commands": [
+        {
+          "command": "python -B -m unittest research_v3.tests.test_T24_release -v",
+          "current_file": "research_v3/tests/test_T24_release.py",
+          "exists": false,
+          "source_sha256": null,
+          "execution_status": "not_established_by_inventory"
+        }
+      ]
+    }
+  ],
+  "scope": "Requirement-specific T00 evidence update; other tasks unchanged, no whole-goal acceptance.",
+  "regression_observation": {
+    "artifact": "T02_REGRESSION_SUITE_OBSERVATION_2026-10-01.json",
+    "classification": "T16_SOURCE_ERROR_CLASSIFICATION_2026-10-01.json",
+    "restoration": "FRONTIER_SOURCE_RESTORE_2026-10-01.json",
+    "restored_gate": "T16_RESTORED_SOURCE_GATE_2026-10-01.json: 72 tests, seven missing-results errors and one status failure",
+    "result_provenance": "T16_RESULT_TRANSITIVE_PROVENANCE_2026-10-01.json: five files restored through normative-pinned stage manifests",
+    "status": "Still unaccepted: targeted tests after result restoration and resource_limit/unsupported semantics review remain open; no later-stage implementation performed."
+  },
+  "runtime_gate": {
+    "schema": "molab_reference_and_cuda_admission_gate_v1",
+    "notebook_id": "nb_8eGbJsWtQ1MTcdvGhr4FEU",
+    "tests_passed": 17,
+    "cuda_tests": 2,
+    "cpu_reference_tests": 15,
+    "report_sha256": "b301f1e335b918fb4cad9e46a7260786ce48b5e280aeffbd8c1435ddac6e2c42",
+    "source_commit": "43ab76cb63f5798890f4e1f2c8a0491c5c2e055c",
+    "source_archive_sha256": "11f574a7417d1d9bb9ab8ec11138f76eec1bb8a86e2e82d77f8850f532892b61",
+    "source_files": 372,
+    "scope": "T03 fixture/reference native gate; no production training, full panel or synthesis-quality acceptance",
+    "run_buttons_after_completion": {
+      "restore": false,
+      "t03_gate": false
+    },
+    "source_gates_open": [
+      "23-25",
+      "36",
+      "38"
+    ]
+  },
+  "existing_data_snapshot": {
+    "split_audit": "T03_EXISTING_ROOT_SPLIT_AUDIT_2026-10-01.json",
+    "word_audit": "T03_LOCAL_ROOT_WORD_REPLAY_2026-10-01.json",
+    "scope": "Read-only legacy main-file evidence, not accepted normative production population."
+  },
+  "refresh_admission_candidate": {
+    "commit": "c53c22a7e354c37b4fcd70d19d543a2f66f1dbc2",
+    "archive_sha256": "7e4ff3ca3576268eabe6f3ffe21d3b93d68b1105d030ebcb067512d670eb9e58",
+    "scope": "CPU contracts only, T03 not accepted"
+  },
+  "refresh_admission_candidate_v3": {
+    "archive_sha256": "8030d750e51f83a07f0c3994cf5ba470bb42ad85d88ccd3e1669b0bdfa39389a",
+    "scope": "24 CPU contract/regression tests; no GPU run",
+    "negative_v2": "Top-level bank digest violated component schema; corrected in V3 and tested through actual checkpoint restore. V2 is preserved and not accepted."
+  },
+  "stage38_reader_reference_v2": {
+    "receipt": "T03_STAGE38_READER_GATE_V2_2026-10-01.json",
+    "status": "reference_verified_native_and_production_open",
+    "source_files": [
+      "research_v3/tests/test_stage23_forest_admission.py",
+      "research_v3/tests/test_stage24_moving_root_admission.py",
+      "research_v3/tests/test_stage25_swap_forest_admission.py",
+      "research_v3/tests/test_stage36_saturated_frame_admission.py",
+      "research_v3/tests/test_stage38_one_excess_admission.py",
+      "research_v3/tests/test_guarded_stream_progress.py",
+      "research_v3/tests/test_stream_reader.py",
+      "research_v3/data/stage38_one_excess_exact_v1.py",
+      "research_v3/data/stream_reader_v13.py",
+      "research_v3/data/stream_solver_dataset_v13.py"
+    ],
+    "no_task_completion": true
+  },
+  "current_remote_observation": {
+    "notebook": "nb_8eGbJsWtQ1MTcdvGhr4FEU",
+    "cell": "TTjf",
+    "status": "interrupted",
+    "visible_interrupt_log_time": "261001 11:52:35",
+    "last_visible_position": 501,
+    "database_count": "not yet read",
+    "child_process_status": "not yet read",
+    "restart_started": false
+  },
+  "guarded_primary_closure": {
+    "receipt": "T03_GUARDED_PRIMARY_CLOSURE_GATE_2026-10-01.json",
+    "status": "reference_verified",
+    "native": "open",
+    "v6_modified": false
+  },
+  "eight_family_stream_dispatch": {
+    "receipt": "T03_EIGHT_FAMILY_DISPATCH_GATE_2026-10-01.json",
+    "status": "reference_verified_native_open",
+    "quarter_distribution_unchanged": true,
+    "no_task_completion": true
+  },
+  "native_guarded_panel_driver": {
+    "receipt": "T03_NATIVE_PANEL_DRIVER_GATE_2026-10-01.json",
+    "status": "prepared_reference_verified_not_native_run",
+    "no_task_completion": true
+  },
+  "dev_end_to_end_timing_correction": {
+    "receipt": "DEV_TIMING_FINAL_VALIDATOR_GATE_2026-10-01.json",
+    "status": "reference_verified_native_open",
+    "no_task_completion": true
+  },
+  "wal_aware_status": {
+    "receipt": "T03_WAL_STATUS_GATE_2026-10-01.json",
+    "status": "reference_verified_native_open",
+    "no_task_completion": true
+  },
+  "actual_reference_gradient_exposure": {
+    "receipt": "T03_REFERENCE_ACTUAL_GRADIENT_GATE_2026-10-01.json",
+    "status": "reference_verified_gpu_route_open",
+    "no_task_completion": true
+  },
+  "model_exposure_journal": {
+    "receipt": "T03_MODEL_EXPOSURE_JOURNAL_REFERENCE_GATE_2026-10-01.json",
+    "status": "actual_reference_field_hooks_verified_native_stream_open",
+    "no_task_completion": true
+  },
+  "cuda_stream_exposure_wiring": {
+    "receipt": "T03_CUDA_STREAM_EXPOSURE_WIRING_GATE_2026-10-01.json",
+    "status": "implemented_host_gates_verified_native_stream_unverified",
+    "no_task_completion": true
+  },
+  "v8_reference_regression": {
+    "receipt": "T03_V8_REFERENCE_REGRESSION_GATE_2026-10-01.json",
+    "tests_passed": 69,
+    "status": "reference_verified_native_and_production_open",
+    "no_task_completion": true
+  },
+  "exposure_checkpoint_binding_update": {
+    "schema": "own_exposure_checkpoint_binding_reference_v1",
+    "tests_passed": 15,
+    "command": "python -m unittest research_v3.tests.test_model_exposure_journal research_v3.tests.test_cuda_stream_exposure_admission research_v3.tests.test_T12_resume -q",
+    "scope": "SQLite snapshot binding through real tensor checkpoint, reference resume tests; CUDA driver wiring inspected, not executed",
+    "open": [
+      "native CUDA full training/resume",
+      "logical journal recovery identity and preserved ahead live branch",
+      "full panels and production acceptance"
+    ],
+    "source_sha256": {
+      "research_v3/data/model_exposure_journal_v1.py": "4d73658906b835b0705b68bfec51c9919bd8d05f1198707c71e671f27637a65e",
+      "research_v3/train/cuda_stream_v13.py": "15f1d426c60fecfb2cd62cee9605b1bb5cdcf1937507de46eecd36f0a05b7d04",
+      "research_v3/tests/test_model_exposure_journal.py": "b050a482e192adfcbfe9f970825f8789c835016585689fd778dee364cfb31e75"
+    }
+  },
+  "split_audit_v2_update": {
+    "status": "reference_checked_native_panel_open",
+    "tests_passed": 9,
+    "command": "python -B -m unittest research_v3.tests.test_T03_data.DataTests.test_split_report_distinguishes_transductive_and_pins_full_sets research_v3.tests.test_T03_data.DataTests.test_neighbor_exposure_excludes_parent research_v3.tests.test_T12_objective -q",
+    "requirement": "T03 split report publishes label-held-out, transductive, strict unseen and hashes",
+    "scope": "exact full-key set hashes; finite supplied augmentation bank; no orbit canonicalization claim",
+    "open": [
+      "full mandated T03 gate",
+      "native sealed panels",
+      "actual production exposure report"
+    ],
+    "source_sha256": {
+      "research_v3/data/splits.py": "44406772fff5c8c2aaf5ce707d6d9a1a7e869b83d6b151f5dba54e736b6ed834",
+      "research_v3/tests/test_T03_data.py": "df42a35b2f601315a406f9f1d4a0d7fd0130534f179cef797ffbff8b9da102c3"
+    }
+  },
+  "historical_quarantine_admission_update": {
+    "status": "reference_admission_checked_native_open",
+    "tests_passed": 10,
+    "command": "python -m unittest research_v3.tests.test_historical_quarantine_admission research_v3.tests.test_model_exposure_journal research_v3.tests.test_cuda_stream_exposure_admission -q",
+    "requirement": "T03 excludes all nine own historical targets from labels/replay/teacher",
+    "scope": "driver requires nine sealed roots and nine valid source hashes; actual own input reader verified all nine; does not prove production bank content",
+    "historical_widths": [
+      108,
+      144,
+      72,
+      90,
+      13,
+      25,
+      34,
+      45,
+      58
+    ],
+    "historical_input_sha256": {
+      "bb_108_8_10.json": "6a1b87558e290544cf9859c13ba6e8c9a891cfdbf9a1dbd936e4de42c627ecdc",
+      "bb_144_12_12.json": "1347d3a39f8c0ddfce79cd3c9c5923526e65a6fe274b012cf70fce629334f34c",
+      "bb_72_12_6.json": "ba53300ed62d34d9f209709b9e7a169f97606cae22691d7b411e2db942808065",
+      "bb_90_8_10.json": "0fabecdd2ab410436ce21849a203041b75ff4f1381f6b6080f52f398810c5c8e",
+      "hgp_13_1.json": "4dd8eb142a4a0bc2baa5c80f2eb3a8f657319e7eb06f3b07cc5ba77c2aa66085",
+      "hgp_25_1.json": "8ca7a5cbf38da659d28f124e2787aa99d6696108f884d59c6c438061e95f5fd0",
+      "hgp_34_10.json": "99591e738c74b57ab10382bb169f46ae7d3118a4bf42c7e199b19bdab1c346b1",
+      "hgp_45_9.json": "4ca39bca7802292a87904e1cd114506f72da150084c7a6c6a8b34118d722b954",
+      "hgp_58_16.json": "6eaf80acb9eb202325ada08e78bee38bca98134fe64aae8825581b1d9747f10b"
+    },
+    "open": [
+      "native bank reconstruction",
+      "actual full train label/replay/teacher audit",
+      "historical forward/gradient disclosure"
+    ],
+    "source_sha256": {
+      "research_v3/train/cuda_stream_v13.py": "7a222abed548b664ec380195c823b0d45f83164c24380585ee93e3e2b6ecfb68",
+      "research_v3/data/model_exposure_journal_v1.py": "e54a5b2109b2a5e6cb6d0ca913b44277580c50a8b8428b505e5ade2e96de826f",
+      "research_v3/data/splits.py": "44406772fff5c8c2aaf5ce707d6d9a1a7e869b83d6b151f5dba54e736b6ed834",
+      "research_v3/tests/test_historical_quarantine_admission.py": "afd39007a3c34121210233b14be9f639b729aa32d14e8c2830fb65f4b3ca57be"
+    }
+  },
+  "teacher_exposure_fix_update": {
+    "status": "reference_checked_native_open",
+    "tests_passed": 12,
+    "command": "python -m unittest research_v3.tests.test_replay_refresh_v13 research_v3.tests.test_model_exposure_journal research_v3.tests.test_cuda_stream_exposure_admission -q",
+    "negative_findings": [
+      "previous refresh metadata comparison omitted seed",
+      "previous teacher refresh call was outside actual stem exposure hooks"
+    ],
+    "changes": [
+      "all nonword SampleRecord fields must remain equal",
+      "teacher refresh enclosed in actual stem journal hooks"
+    ],
+    "scope": "metadata mutation rejection and existing actual CPU field journal tests; CUDA teacher route code wiring inspected",
+    "open": [
+      "actual native teacher plus joint loss run",
+      "native complete exposure audit"
+    ],
+    "source_sha256": {
+      "research_v3/train/cuda_stream_v13.py": "0d7cee7b529bf317059aba752efc5677501f50f7c46b5406b60bbb8e876dcce3",
+      "research_v3/tests/test_replay_refresh_v13.py": "9b50224b56136d092bdb25219223be619cefa415e5e8d16af0aafb703457729e"
+    }
+  },
+  "teacher_stem_binding_update": {
+    "status": "reference_checked_native_open",
+    "tests_passed": 15,
+    "command": "python -m unittest research_v3.tests.test_model_exposure_journal research_v3.tests.test_replay_refresh_v13 research_v3.tests.test_disk_replay_refresh_v13 -q",
+    "negative_finding": "previous driver attached teacher exposure hook only to training field stem",
+    "scope": "declared actual teacher stems, duplicate module deduplication, actual CPU field no-grad forward journal; native route unexecuted",
+    "open": [
+      "native teacher exposure",
+      "separate frozen teacher weights/checkpoint binding",
+      "complete production training"
+    ],
+    "source_sha256": {
+      "research_v3/train/cuda_stream_v13.py": "9eed3b1b60f6b55ac90cf60e91700b02bb3a8fd38f62bb63e3a5ebcf90573669",
+      "research_v3/train/neural_refresh_solver_v13.py": "7f5b81bfbac643cdc3fe9a98df5fcb5e50829de55746aec725f625dd7e29f1b3",
+      "research_v3/train/replay_refresh_v13.py": "0582fddf77e17bdcdbe2062af8a56c4a7008beec866f245169ab92cfb8622090",
+      "research_v3/tests/test_model_exposure_journal.py": "5b4e4e933204ae85ca7688280869eb9d70181e5e48e607654e7b15b888307f20"
+    }
+  },
+  "teacher_model_checkpoint_update": {
+    "status": "reference_checked_native_open",
+    "tests_passed": 10,
+    "command": "python -m unittest research_v3.tests.test_neural_refresh_solver_v13.NeuralRefreshContractTests research_v3.tests.test_replay_refresh_v13 research_v3.tests.test_disk_replay_refresh_v13 -q",
+    "negative_finding": "old teacher checkpoint state retained last_search without binding actual parameters/buffers/module modes",
+    "scope": "actual tiny CPU teacher state drift rejection; explicit v2 schema, old schema refused",
+    "open": [
+      "native full teacher checksum cost",
+      "whole CUDA training resume",
+      "separate frozen teacher artifact restoration"
+    ],
+    "source_sha256": {
+      "research_v3/train/neural_refresh_solver_v13.py": "9f2600f687c7c9dca0e159c7a82ce16d8ea63aa1879c95293ac5b3dbc9cbc553",
+      "research_v3/tests/test_neural_refresh_solver_v13.py": "d5b5a9b906981055e41a67b91d8f13b52756e4f529c5e2683d83d600c95da62d"
+    }
+  },
+  "walk_mixture_schedule_update": {
+    "status": "reference_schedule_checked_native_data_open",
+    "tests_passed": 7,
+    "command": "python -m unittest research_v3.tests.test_walk_mixture_schedule research_v3.tests.test_guarded_family_dispatch research_v3.tests.test_guarded_stream_progress -q",
+    "negative_finding": "seed_base + split_offset + epoch*1000000 + index*100 has constant parity at attempt zero; old walk mixture selected one source except retry artifacts",
+    "scope": "all 1792 schedule positions; every width has 16 ordinary and 16 Poisson roots inside unchanged quarter walk share; not generated native data",
+    "provenance": "new explicit manifest walk_kind_schedule; no existing database source-manifest migration",
+    "open": [
+      "fresh native full panels",
+      "source SHA regeneration and native production dataset acceptance"
+    ],
+    "source_sha256": {
+      "research_v3/data/stream_solver_dataset_v13.py": "53d187d7d57f97ee7c4ed3b519c7be1ebe8291db727d2c2a5dead36db5ab65ac",
+      "research_v3/tests/test_walk_mixture_schedule.py": "09e276c6ac4ab0a3c1b307a47d3d1b37e49df4e19abe66a2efdc941ff221a0ae"
+    }
+  },
+  "stream_split_units_update": {
+    "status": "reference_checked_native_panel_open",
+    "tests_passed": 5,
+    "command": "python -m unittest research_v3.tests.test_stream_split_units research_v3.tests.test_guarded_stream_progress research_v3.tests.test_walk_mixture_schedule -q",
+    "negative_finding": "seal checked source/seed but not shared lineage_id across different source/seed units",
+    "scope": "disjoint seed domain bounds and cross-split seed/lineage collision rejection; no actual full panel audit",
+    "open": [
+      "fresh native panel seal",
+      "complete train/replay lineage audit"
+    ],
+    "source_sha256": {
+      "research_v3/data/stream_solver_dataset_v13.py": "cfd923a022c89b3a4041717f73432b0dd6e9e01ff5462ecbfe91da5ff046696d",
+      "research_v3/tests/test_stream_split_units.py": "c7e76251c3e16f03f8295553f55c0a99b4451d9637883c49e47e19a123bf75a7"
+    }
+  },
+  "holdout_wal_reader_update": {
+    "status": "reference_storage_checked_native_bank_open",
+    "tests_passed": 6,
+    "command": "python -m unittest research_v3.tests.test_holdout_wal_snapshot research_v3.tests.test_stream_status_v13 research_v3.tests.test_historical_portability -q",
+    "negative_finding": {
+      "old_reader": "immutable=1",
+      "committed_wal_rows": 1,
+      "old_visible_rows": 0
+    },
+    "scope": "actual SQLite WAL fixture: read-only consistent committed snapshot, writes rejected, database/WAL hashes unchanged by reads",
+    "open": [
+      "actual Molab sealed database read",
+      "native GPU bank reconstruction"
+    ],
+    "source_sha256": {
+      "research_v3/gpu/frozen_bank_v13.py": "ce4c2195374fc895c630e106ce453d0493142e4698794e36b24a0b8bc33cf7d2",
+      "research_v3/tests/test_holdout_wal_snapshot.py": "991ee0ef60e641de93e504179967761ee3e0f9b156ef7e543f78453dcb48452f"
+    }
+  },
+  "native_v12_update": {
+    "receipt": "T03_NATIVE_EXPOSURE_RESUME_VERIFIED_V12_2026-10-01.json",
+    "bounded_cuda_field_exposure_and_resume": "verified_two_tests",
+    "full_selected_bellman_resume": "open",
+    "full_guarded_panel": "running_cell_ubBc",
+    "production_training_launched": false,
+    "permission_block_resolved": true
+  },
+  "journal_logical_identity_update": {
+    "receipt": "T03_EXPOSURE_LOGICAL_IDENTITY_REFERENCE_2026-10-01.json",
+    "reference_tests": 13,
+    "native_new_schema": "open",
+    "full_selected_bellman_resume": "open",
+    "existing_v12_and_legacy_journals": "preserved; no silent migration"
+  },
+  "inventory_update": "Corrected obsolete inaccessible-Molab and active-v6 statements; no broadened completion status.",
+  "resource_limit_word_retention": {
+    "receipt": "T03_RESOURCE_LIMIT_WORD_RETENTION_REFERENCE_2026-10-01.json",
+    "native": "pending",
+    "exact_labels_on_limits": false
+  },
+  "native_v13_v14": {
+    "schema": "T03_native_v13_resume_and_v14_resource_words",
+    "v13": {
+      "source_commit": "125b0eea5df68246c4859de8979ecab138d3d66b",
+      "cell": "Dfuh",
+      "tests": 2,
+      "accepted": true,
+      "report_sha256": "3f175806bf30f8dc522f65479dddbb78870dbf14ea7bd1a5dcea8ac9537d1075",
+      "log_sha256": "bdaffe7f06c0add02512f28556b139bf597d72cce0c83d7d45ae47543cbbcb1e",
+      "seconds": 2.383821273000649,
+      "scope": "bounded actual CUDA field and immutable journal contract resume, not full Bellman"
+    },
+    "v12_panel": {
+      "report_sha256": "897d4d3afc7618085e8ef196662d3316876cf8ed745d8c29d4a6dd121f63234a",
+      "log_sha256": "0e8f20fd4ef285753c2d21d3d8f87bb48da2d508aab5ad76da8d420dd8bdafa0",
+      "exact_cases": 109,
+      "resource_cases": 3
+    },
+    "v14": {
+      "source_commit": "b99bc80a8ff6ac1d1159c34ed046ca78d0568a1c",
+      "cell": "nVdf",
+      "tests": 3,
+      "accepted": true,
+      "terminal_returncode": 0,
+      "terminal_seconds": 1.5999888559999818,
+      "cases": [
+        {
+          "n": 108,
+          "upper_bound": 109,
+          "seconds": 0.08730753300187644
+        },
+        {
+          "n": 122,
+          "upper_bound": 123,
+          "seconds": 0.6230833080007869
+        },
+        {
+          "n": 144,
+          "upper_bound": 145,
+          "seconds": 0.6759226760004822
+        }
+      ],
+      "matrix_matches_baseline": true,
+      "serialized_full_words_verified": true,
+      "exact_contraction_status": "resource_limit; not accepted",
+      "scope": "same own diagnostic roots; not BB benchmark instances"
+    },
+    "negative_transport_event": {
+      "phase": "reload replayed old POST",
+      "result": "marimo duplicate-name compile guard rejected; no additional process launched"
+    },
+    "public_artifact_download": {
+      "status": "completed chunked gzip; all six SHA256 verified",
+      "archive": "verified_native_v12_v14_results_20261001.zip",
+      "archive_sha256": "f1025575aaf6db8d7026dbae2a9430de94d4cd0893ae8d0c3236b2230ebd07e8",
+      "public_commit": "46f309f05b3e83ba2da2af408cb3c20b7c890c3d",
+      "files": {
+        "v12_guarded_panel_112.json": "897d4d3afc7618085e8ef196662d3316876cf8ed745d8c29d4a6dd121f63234a",
+        "v12_guarded_panel_112.log": "0e8f20fd4ef285753c2d21d3d8f87bb48da2d508aab5ad76da8d420dd8bdafa0",
+        "v13_native_exposure_resume.json": "3f175806bf30f8dc522f65479dddbb78870dbf14ea7bd1a5dcea8ac9537d1075",
+        "v13_native_exposure_resume.log": "bdaffe7f06c0add02512f28556b139bf597d72cce0c83d7d45ae47543cbbcb1e",
+        "v14_resource_words_native.json": "1fabac0224301ee346f2bd83b2b2f21aeb8378e4b60b956ba0c9ec3a979b32e0",
+        "v14_resource_words_native.log": "1eafb5db19c5243a466a2b7560631fe596098f1d2700995b77f44a2343aef13a"
+      },
+      "negative_transfer_preserved": "oversized marimo stdout truncated; local bridge28636 positively identified and closed; no native compute restart"
+    },
+    "production_training_launched": false
+  },
+  "independent_one_excess_bracket": {
+    "primary_theorem": "stage37 necessary control-delta criterion",
+    "reference_receipt": "T03_WORD_BRACKET_REFERENCE_2026-10-01.json",
+    "reference_tests": 3,
+    "complete_gl3_states": 168,
+    "certified_gl3_cases": 75,
+    "native_three_large_roots": "prepared but not observed started; bridge73114 waiting; CDP unavailable",
+    "exact_family_admission": "unchanged",
+    "full_amplitude_contraction": "still resource limited; not replaced or marked complete",
+    "source_commit": "1cec3a7d25bebf6241fd6003ae1e96f0587b3342"
+  }
+}
