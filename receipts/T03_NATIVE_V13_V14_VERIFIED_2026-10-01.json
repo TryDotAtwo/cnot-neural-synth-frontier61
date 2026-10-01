@@ -1,0 +1,57 @@
+{
+  "schema": "T03_native_v13_resume_and_v14_resource_words",
+  "v13": {
+    "source_commit": "125b0eea5df68246c4859de8979ecab138d3d66b",
+    "cell": "Dfuh",
+    "tests": 2,
+    "accepted": true,
+    "report_sha256": "3f175806bf30f8dc522f65479dddbb78870dbf14ea7bd1a5dcea8ac9537d1075",
+    "log_sha256": "bdaffe7f06c0add02512f28556b139bf597d72cce0c83d7d45ae47543cbbcb1e",
+    "seconds": 2.383821273000649,
+    "scope": "bounded actual CUDA field and immutable journal contract resume, not full Bellman"
+  },
+  "v12_panel": {
+    "report_sha256": "897d4d3afc7618085e8ef196662d3316876cf8ed745d8c29d4a6dd121f63234a",
+    "log_sha256": "0e8f20fd4ef285753c2d21d3d8f87bb48da2d508aab5ad76da8d420dd8bdafa0",
+    "exact_cases": 109,
+    "resource_cases": 3
+  },
+  "v14": {
+    "source_commit": "b99bc80a8ff6ac1d1159c34ed046ca78d0568a1c",
+    "cell": "nVdf",
+    "tests": 3,
+    "accepted": true,
+    "terminal_returncode": 0,
+    "terminal_seconds": 1.5999888559999818,
+    "cases": [
+      {
+        "n": 108,
+        "upper_bound": 109,
+        "seconds": 0.08730753300187644
+      },
+      {
+        "n": 122,
+        "upper_bound": 123,
+        "seconds": 0.6230833080007869
+      },
+      {
+        "n": 144,
+        "upper_bound": 145,
+        "seconds": 0.6759226760004822
+      }
+    ],
+    "matrix_matches_baseline": true,
+    "serialized_full_words_verified": true,
+    "exact_contraction_status": "resource_limit; not accepted",
+    "scope": "same own diagnostic roots; not BB benchmark instances"
+  },
+  "negative_transport_event": {
+    "phase": "reload replayed old POST",
+    "result": "marimo duplicate-name compile guard rejected; no additional process launched"
+  },
+  "public_artifact_download": {
+    "transport_handle": 21857,
+    "status": "running; oversized console output truncated; no files claimed; chunked gzip transport prepared"
+  },
+  "production_training_launched": false
+}
