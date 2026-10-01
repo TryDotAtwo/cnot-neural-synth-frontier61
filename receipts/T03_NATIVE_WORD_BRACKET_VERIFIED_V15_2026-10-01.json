@@ -1,0 +1,49 @@
+{
+  "schema": "T03_native_independent_one_excess_bracket_verified_v15",
+  "source_commit": "1cec3a7d25bebf6241fd6003ae1e96f0587b3342",
+  "bootstrap_commit": "817c399edd72ca8c448b4905f72da172bda44bf3",
+  "cell": "FJPZ",
+  "pid": 19232,
+  "returncode": 0,
+  "seconds": 0.8738772959986818,
+  "accepted": true,
+  "source_UB_report_SHA256": "1fabac0224301ee346f2bd83b2b2f21aeb8378e4b60b956ba0c9ec3a979b32e0",
+  "primary_theorem_SHA256": "144cfd8d91663581fee9edb79718d5fb93969dcda50a42e8939965024834c6f9",
+  "cases": [
+    {
+      "n": 108,
+      "changed_rows": 108,
+      "missing_control_targets": 1,
+      "excluded_length": 108,
+      "global_lower_bound": 109,
+      "verified_full_word_cost": 109,
+      "exact_distance": 109,
+      "contraction_status": "resource_limit"
+    },
+    {
+      "n": 122,
+      "changed_rows": 122,
+      "missing_control_targets": 1,
+      "excluded_length": 122,
+      "global_lower_bound": 123,
+      "verified_full_word_cost": 123,
+      "exact_distance": 123,
+      "contraction_status": "resource_limit"
+    },
+    {
+      "n": 144,
+      "changed_rows": 144,
+      "missing_control_targets": 1,
+      "excluded_length": 144,
+      "global_lower_bound": 145,
+      "verified_full_word_cost": 145,
+      "exact_distance": 145,
+      "contraction_status": "resource_limit"
+    }
+  ],
+  "scope": "unchanged own source-diagnostic roots, NOT historical BB code benchmark targets; necessity certificate plus full verified UB; no amplitude count",
+  "native_report": "/marimo/frontier61_recovery_v15/word_brackets_native.json",
+  "report_SHA256": "not yet collected",
+  "dataset_admission_changed": false,
+  "production_training_launched": false
+}
