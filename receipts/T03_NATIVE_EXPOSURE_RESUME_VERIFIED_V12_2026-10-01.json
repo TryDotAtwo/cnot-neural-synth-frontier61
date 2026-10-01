@@ -1,0 +1,22 @@
+{
+  "schema": "T03_native_exposure_resume_verified_v12",
+  "accepted": true,
+  "scope": "bounded actual CUDA A01/B01 field; not full Bellman or production",
+  "tests": 2,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "report_sha256": "29467e2aa5de3f6a4a985e94e61bf68e9c7e5f054349388b52121b9ac87252ba",
+  "log_sha256": "84d5d46324c9e2ef0db4b2834051663626c05e843bd0f3bd4c0e5306b9e09a85",
+  "end_to_end_seconds": 2.4317681249995076,
+  "environment": {
+    "python": "3.13.11",
+    "torch": "2.11.0+cu130",
+    "cuda": "13.0",
+    "gpu": "NVIDIA RTX PRO 6000 Blackwell Server Edition"
+  },
+  "source_commit": "a91d309e698c6d5e8df96d3e280e464965e9b223",
+  "native_cell": "HeCJ",
+  "negative_v11_preserved": true,
+  "production_training_launched": false
+}
